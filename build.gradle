@@ -1,0 +1,88 @@
+buildscript {
+
+    ext {
+        springBootVersion = '2.1.7.RELEASE'
+        springDependencyMavagementVersion = '1.0.8.RELEASE'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+    }
+}
+
+plugins {
+//    id 'org.springframework.boot' version "$springBootVersion"
+    id 'io.spring.dependency-management' version "$springDependencyMavagementVersion"
+    id 'java'
+    id 'java-library'
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencyManagement {
+        imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+    }
+}
+
+subprojects {
+//    apply plugin: 'java'
+//    apply plugin: 'java-library'
+
+    group = 'com.mz.reactor.ddd'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '11'
+
+    dependencies {
+        annotationProcessor 'org.immutables:value:2.7.5'
+    }
+}
+
+project(':common-api') {
+    dependencies {
+        api project(':shared-dependencies')
+    }
+}
+
+project(':bank-account:bank-account-application') {
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+
+//    springBoot {
+//        mainClassName = 'com.mz.reactor.ddd.reactorddd.application.BankAccountApp'
+//    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-webflux'
+        implementation project(':bank-account:account-domain')
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'io.projectreactor:reactor-test'
+    }
+}
+
+project(':bank-account:account-domain') {
+    dependencies {
+        api project(':common-api')
+    }
+}
+
+project(':bank-account:transaction-domain') {}
+
+project(':shared-dependencies') {
+    dependencies {
+        api 'org.immutables:value:2.7.5'
+    }
+}

@@ -1,4 +1,4 @@
-package com.mz.reactor.ddd.reactorddd.domain;
+package com.mz.reactor.ddd.reactorddd.account.domain;
 
 import com.mz.reactor.ddd.common.api.valueobject.Id;
 import com.mz.reactor.ddd.common.api.valueobject.Money;

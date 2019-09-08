@@ -1,4 +1,4 @@
-package com.mz.reactor.ddd.reactorddd.domain;
+package com.mz.reactor.ddd.reactorddd.account.domain;
 
 import org.immutables.value.Value;
 

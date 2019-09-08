@@ -5,7 +5,6 @@ import org.immutables.value.Value;
 import java.time.Instant;
 import java.util.Optional;
 
-@Value.Immutable
 public interface Command {
 
   Optional<String> correlationId();

@@ -68,6 +68,7 @@ project(':bank-account:bank-account-application') {
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-webflux'
         implementation project(':bank-account:account-domain')
+        implementation project(':bank-account:transaction-domain')
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'io.projectreactor:reactor-test'
     }
@@ -79,7 +80,11 @@ project(':bank-account:account-domain') {
     }
 }
 
-project(':bank-account:transaction-domain') {}
+project(':bank-account:transaction-domain') {
+    dependencies {
+        api project(':common-api')
+    }
+}
 
 project(':shared-dependencies') {
     dependencies {

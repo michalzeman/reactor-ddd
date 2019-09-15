@@ -9,21 +9,6 @@ import java.util.function.BiFunction;
 
 public class AccountEventApplier implements EventApplier<AccountAggregate, AccountEvent> {
 
-  private final Map<Class, BiFunction> appliers = new HashMap<>();
-
-  public AccountEventApplier() {
-    addApplier(AccountCreated.class, this::applyAccountCreated);
-    addApplier(MoneyWithdrawn.class, this::applyMoneyWithdrawn);
-    addApplier(MoneyDeposited.class, this::applyMoneyDeposited);
-  }
-
-  private <E extends AccountEvent> void addApplier(
-      Class<E> eClass,
-      BiFunction<AccountAggregate, E, AccountAggregate> applier
-  ) {
-    appliers.put(eClass, applier);
-  }
-
   private AccountAggregate applyAccountCreated(AccountAggregate aggregate, AccountCreated event) {
     return aggregate;
   }
@@ -38,6 +23,14 @@ public class AccountEventApplier implements EventApplier<AccountAggregate, Accou
 
   @Override
   public AccountAggregate apply(AccountAggregate aggregate, AccountEvent event) {
-    return (AccountAggregate) appliers.get(event.getClass()).apply(aggregate, event);
+    if (event instanceof AccountCreated) {
+      return applyAccountCreated(aggregate, (AccountCreated) event);
+    } else if (event instanceof MoneyWithdrawn) {
+      return applyMoneyWithdrawn(aggregate, (MoneyWithdrawn) event);
+    } else if (event instanceof MoneyDeposited) {
+      return applyMoneyDeposited(aggregate, (MoneyDeposited) event);
+    } else {
+      return aggregate;
+    }
   }
 }

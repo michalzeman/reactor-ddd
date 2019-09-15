@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 @Value.Immutable
 public interface TransactionCreated extends TransactionEvent {
-
+  
   String fromAccountId();
 
   String toAccountId();

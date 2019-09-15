@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 
 @Value.Immutable
 public interface CreateTransaction extends TransactionCommand {
-  String aggregateId();
 
   String fromAccountId();
 

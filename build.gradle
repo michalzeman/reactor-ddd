@@ -36,11 +36,15 @@ allprojects {
     dependencyManagement {
         imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
     }
+
+    test {
+        useJUnitPlatform{
+            includeEngines 'junit-jupiter'
+        }
+    }
 }
 
 subprojects {
-//    apply plugin: 'java'
-//    apply plugin: 'java-library'
 
     group = 'com.mz.reactor.ddd'
     version = '0.0.1-SNAPSHOT'
@@ -48,6 +52,8 @@ subprojects {
 
     dependencies {
         annotationProcessor 'org.immutables:value:2.7.5'
+        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.5.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
     }
 }
 
@@ -89,5 +95,6 @@ project(':bank-account:transaction-domain') {
 project(':shared-dependencies') {
     dependencies {
         api 'org.immutables:value:2.7.5'
+        api group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     }
 }

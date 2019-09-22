@@ -3,6 +3,7 @@ package com.mz.reactor.ddd.reactorddd.transaction.domain;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CreateTransaction;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.command.FinishTransaction;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionCreated;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFailed;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFinished;
 import org.junit.jupiter.api.Test;
 
@@ -68,7 +69,7 @@ class TransactionAggregateTest {
         .build();
 
     var aggregate = new TransactionAggregate(aggregateId);
-    var state = aggregate.applyTransactionCreated(event).getState();
+    var state = aggregate.applyTransactionCreated(event).getStatus();
 
     assertEquals(state.aggregateId(), aggregateId);
     assertEquals(state.toAccountId(), toAccountId);
@@ -125,9 +126,65 @@ class TransactionAggregateTest {
 
   @Test
   void applyTransactionFinished() {
+    //given
+    var aggregateId = UUID.randomUUID().toString();
+    var correlationId = UUID.randomUUID().toString();
+    var toAccountId = UUID.randomUUID().toString();
+    var fromAccountId = UUID.randomUUID().toString();
+
+    var event = TransactionCreated.builder()
+        .aggregateId(aggregateId)
+        .correlationId(correlationId)
+        .amount(BigDecimal.TEN)
+        .fromAccountId(fromAccountId)
+        .toAccountId(toAccountId)
+        .build();
+
+    var aggregate = new TransactionAggregate(aggregateId);
+    aggregate.applyTransactionCreated(event);
+
+    //when
+    var transactionFinished = TransactionFinished.builder()
+        .toAccountId(toAccountId)
+        .fromAccountId(fromAccountId)
+        .aggregateId(aggregateId)
+        .build();
+    var state = aggregate.applyTransactionFinished(transactionFinished).getStatus();
+
+    //then
+    assertEquals(state.status(), TransactionStatus.FINISHED);
   }
 
   @Test
   void applyTransactionFailed() {
+    //given
+    var aggregateId = UUID.randomUUID().toString();
+    var correlationId = UUID.randomUUID().toString();
+    var toAccountId = UUID.randomUUID().toString();
+    var fromAccountId = UUID.randomUUID().toString();
+
+    var event = TransactionCreated.builder()
+        .aggregateId(aggregateId)
+        .correlationId(correlationId)
+        .amount(BigDecimal.TEN)
+        .fromAccountId(fromAccountId)
+        .toAccountId(toAccountId)
+        .build();
+
+    var aggregate = new TransactionAggregate(aggregateId);
+    aggregate.applyTransactionCreated(event);
+
+    //when
+    var transactionFailed = TransactionFailed.builder()
+        .toAccountId(toAccountId)
+        .fromAccountId(fromAccountId)
+        .aggregateId(aggregateId)
+        .amount(BigDecimal.TEN)
+        .build();
+    var state = aggregate.applyTransactionFailed(transactionFailed).getStatus();
+
+    //then
+    assertEquals(state.status(), TransactionStatus.FAILED);
+    assertEquals(state.amount(), BigDecimal.TEN);
   }
 }

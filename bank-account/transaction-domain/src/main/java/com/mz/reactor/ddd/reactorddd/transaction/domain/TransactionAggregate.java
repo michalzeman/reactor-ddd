@@ -11,13 +11,6 @@ import java.math.BigDecimal;
 
 public class TransactionAggregate {
 
-  enum State {
-    INITIALIZED,
-    CREATED,
-    FINISHED,
-    FAILED
-  }
-
   private Id aggregateId;
 
   private Id fromAccount;
@@ -26,15 +19,15 @@ public class TransactionAggregate {
 
   private BigDecimal amount;
 
-  private State state;
+  private TransactionStatus status;
 
   public TransactionAggregate(String aggregateId) {
     this.aggregateId = new Id(aggregateId);
-    state = State.INITIALIZED;
+    status = TransactionStatus.INITIALIZED;
   }
 
   public TransactionCreated validateCreateTransaction(CreateTransaction command) {
-    if (state == State.INITIALIZED) {
+    if (status == TransactionStatus.INITIALIZED) {
       Id.validate(command.fromAccountId(), command.toAccountId());
       if (command.amount().compareTo(BigDecimal.ZERO) <= 0) {
         throw new RuntimeException(String.format("Amount can't be %s", command.amount()));
@@ -48,13 +41,13 @@ public class TransactionAggregate {
           .toAccountId(command.toAccountId())
           .build();
     } else {
-      throw new RuntimeException(String.format("Can't be applied command %s, aggregate is in state %s",
-          command, this.state));
+      throw new RuntimeException(String.format("Can't be applied command %s, aggregate is in TransactionStatus %s",
+          command, this.status));
     }
   }
 
   public TransactionFinished validateFinishTransaction(FinishTransaction command) {
-    if (state == State.CREATED) {
+    if (status == TransactionStatus.CREATED) {
       return TransactionFinished.builder()
           .aggregateId(aggregateId.getValue())
           .correlationId(command.correlationId())
@@ -62,7 +55,7 @@ public class TransactionAggregate {
           .toAccountId(toAccount.getValue())
           .build();
     } else {
-      throw new RuntimeException(String.format("Transaction in the state: %s can't be finished!", state));
+      throw new RuntimeException(String.format("Transaction in the state: %s can't be finished!", status));
     }
   }
 
@@ -70,26 +63,27 @@ public class TransactionAggregate {
     this.fromAccount = new Id(created.fromAccountId());
     this.toAccount = new Id(created.toAccountId());
     this.amount = created.amount();
-    this.state = State.CREATED;
+    this.status = TransactionStatus.CREATED;
     return this;
   }
 
   public TransactionAggregate applyTransactionFinished(TransactionFinished event) {
-    this.state = State.FINISHED;
+    this.status = TransactionStatus.FINISHED;
     return this;
   }
 
   public TransactionAggregate applyTransactionFailed(TransactionFailed event) {
-    this.state = State.FAILED;
+    this.status = TransactionStatus.FAILED;
     return this;
   }
 
-  public TransactionState getState() {
+  public TransactionState getStatus() {
     return TransactionState.builder()
         .amount(amount)
         .fromAccountId(fromAccount.getValue())
         .toAccountId(toAccount.getValue())
         .aggregateId(aggregateId.getValue())
+        .status(this.status)
         .build();
   }
 }

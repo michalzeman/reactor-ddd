@@ -58,7 +58,10 @@ public class TransactionCommandHandler implements CommandHandler<TransactionAggr
   public CommandResult execute(TransactionAggregate aggregate, TransactionCommand command) {
     if (command instanceof CreateTransaction) {
       return doCreateTransaction(aggregate, (CreateTransaction) command);
-    } else {
+    }
+    if (command instanceof FinishTransaction) {
+      return doFinishTransaction(aggregate, (FinishTransaction) command);
+    }else {
       return CommandResult.badCommand();
     }
   }

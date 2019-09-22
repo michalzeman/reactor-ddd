@@ -15,6 +15,8 @@ public interface TransactionState {
 
   BigDecimal amount();
 
+  TransactionStatus status();
+
   static ImmutableTransactionState.Builder builder() {
     return ImmutableTransactionState.builder();
   }

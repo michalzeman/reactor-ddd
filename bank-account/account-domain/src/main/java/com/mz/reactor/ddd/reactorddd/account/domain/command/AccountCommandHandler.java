@@ -2,7 +2,11 @@ package com.mz.reactor.ddd.reactorddd.account.domain.command;
 
 import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
+import com.mz.reactor.ddd.common.api.command.ImmutableCommandResult;
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountAggregate;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.DepositMoneyFailed;
+
+import java.util.Optional;
 
 public class AccountCommandHandler implements CommandHandler<AccountAggregate, AccountCommand> {
 
@@ -15,7 +19,25 @@ public class AccountCommandHandler implements CommandHandler<AccountAggregate, A
   }
 
   private CommandResult doDepositMoney(AccountAggregate aggregate, DepositMoney command) {
-    return null;
+    try {
+      return Optional.of(command)
+          .map(aggregate::validateDepositMoney)
+          .map(e -> CommandResult.builder()
+              .statusCode(CommandResult.StatusCode.OK)
+              .addEvents(e)
+              .build())
+          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified());
+    } catch (RuntimeException e) {
+      return CommandResult.builder()
+          .addEvents(DepositMoneyFailed.builder()
+              .aggregateId(command.aggregateId())
+              .amount(command.amount())
+              .correlationId(command.correlationId())
+              .build())
+          .statusCode(CommandResult.StatusCode.FAILED)
+          .error(e)
+          .build();
+    }
   }
 
   @Override

@@ -122,4 +122,12 @@ class TransactionAggregateTest {
         .aggregateId(aggregateId)
         .build()));
   }
+
+  @Test
+  void applyTransactionFinished() {
+  }
+
+  @Test
+  void applyTransactionFailed() {
+  }
 }

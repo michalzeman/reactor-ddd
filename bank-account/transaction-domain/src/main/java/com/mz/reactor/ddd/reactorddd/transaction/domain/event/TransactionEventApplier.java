@@ -10,12 +10,28 @@ public class TransactionEventApplier implements EventApplier<TransactionAggregat
   public TransactionAggregate apply(TransactionAggregate aggregate, TransactionEvent event) {
     if (event instanceof TransactionCreated) {
       return applyTransactionCreated(aggregate, (TransactionCreated) event);
+    }
+    if (event instanceof TransactionFinished) {
+      return applyTransactionFinished(aggregate, (TransactionFinished) event);
+    }
+    if (event instanceof TransactionFailed) {
+      return applyTransactionFailed(aggregate, (TransactionFailed) event);
     } else {
       return aggregate;
     }
   }
 
+  private TransactionAggregate applyTransactionFailed(TransactionAggregate aggregate, TransactionFailed event) {
+    return aggregate.applyTransactionFailed(event);
+  }
+
+  private TransactionAggregate applyTransactionFinished(TransactionAggregate aggregate, TransactionFinished event) {
+    return aggregate.applyTransactionFinished(event);
+  }
+
   private TransactionAggregate applyTransactionCreated(TransactionAggregate aggregate, TransactionCreated event) {
     return aggregate.applyTransactionCreated(event);
   }
+
+
 }

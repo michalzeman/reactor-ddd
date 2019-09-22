@@ -4,6 +4,7 @@ import com.mz.reactor.ddd.common.api.valueobject.Id;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CreateTransaction;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.command.FinishTransaction;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionCreated;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFailed;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFinished;
 
 import java.math.BigDecimal;
@@ -70,6 +71,16 @@ public class TransactionAggregate {
     this.toAccount = new Id(created.toAccountId());
     this.amount = created.amount();
     this.state = State.CREATED;
+    return this;
+  }
+
+  public TransactionAggregate applyTransactionFinished(TransactionFinished event) {
+    this.state = State.FINISHED;
+    return this;
+  }
+
+  public TransactionAggregate applyTransactionFailed(TransactionFailed event) {
+    this.state = State.FAILED;
     return this;
   }
 

@@ -4,6 +4,7 @@ import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.common.api.command.ImmutableCommandResult;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionAggregate;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.event.FinishTransactionFailed;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFailed;
 
 import java.util.List;
@@ -17,9 +18,10 @@ public class TransactionCommandHandler implements CommandHandler<TransactionAggr
 
   private CommandResult doCreateTransaction(TransactionAggregate aggregate, CreateTransaction command) {
     try {
-      return Optional.ofNullable(aggregate.validateCreateTransaction(command))
+      return Optional.of(command)
+          .map(aggregate::validateCreateTransaction)
           .map(e -> CommandResult.builder()
-              .events(List.of(e))
+              .addEvents(e)
               .statusCode(CommandResult.StatusCode.OK)
               .build())
           .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified());
@@ -28,6 +30,26 @@ public class TransactionCommandHandler implements CommandHandler<TransactionAggr
           .events(List.of(TransactionFailed.from(command)))
           .statusCode(CommandResult.StatusCode.FAILED)
           .error(e)
+          .build();
+    }
+  }
+
+  private CommandResult doFinishTransaction(TransactionAggregate aggregate, FinishTransaction commad) {
+    try {
+      return Optional.of(commad)
+          .map(aggregate::validateFinishTransaction)
+          .map(e -> CommandResult.builder().build())
+          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified());
+    } catch (RuntimeException e) {
+      return CommandResult.builder()
+          .statusCode(CommandResult.StatusCode.FAILED)
+          .error(e)
+          .addEvents(FinishTransactionFailed.builder()
+              .aggregateId(commad.aggregateId())
+              .correlationId(commad.correlationId())
+              .fromAccountId(commad.fromAccountId())
+              .toAccountId(commad.toAccountId())
+              .build())
           .build();
     }
   }

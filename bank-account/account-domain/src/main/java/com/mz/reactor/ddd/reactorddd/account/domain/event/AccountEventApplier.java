@@ -3,14 +3,10 @@ package com.mz.reactor.ddd.reactorddd.account.domain.event;
 import com.mz.reactor.ddd.common.api.event.EventApplier;
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountAggregate;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiFunction;
-
 public class AccountEventApplier implements EventApplier<AccountAggregate, AccountEvent> {
 
   private AccountAggregate applyAccountCreated(AccountAggregate aggregate, AccountCreated event) {
-    return aggregate;
+    return aggregate.applyAccountCreated(event);
   }
 
   private AccountAggregate applyMoneyWithdrawn(AccountAggregate aggregate, MoneyWithdrawn event) {
@@ -18,7 +14,7 @@ public class AccountEventApplier implements EventApplier<AccountAggregate, Accou
   }
 
   private AccountAggregate applyMoneyDeposited(AccountAggregate aggregate, MoneyDeposited event) {
-    return aggregate;
+    return aggregate.applyMoneyDeposited(event);
   }
 
   @Override

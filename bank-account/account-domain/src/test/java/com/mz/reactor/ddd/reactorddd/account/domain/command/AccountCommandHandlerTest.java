@@ -22,7 +22,9 @@ class AccountCommandHandlerTest {
     var aggregateId = UUID.randomUUID().toString();
     var correlationId = UUID.randomUUID().toString();
     var accountAggregate = new AccountAggregate(aggregateId);
+    var commandId = UUID.randomUUID().toString();
     var command = DepositMoney.builder()
+        .commandId(commandId)
         .aggregateId(aggregateId)
         .correlationId(correlationId)
         .amount(BigDecimal.TEN)
@@ -54,7 +56,9 @@ class AccountCommandHandlerTest {
     var aggregateId = UUID.randomUUID().toString();
     var correlationId = UUID.randomUUID().toString();
     var accountAggregate = new AccountAggregate(aggregateId);
+    var commandId = UUID.randomUUID().toString();
     var command = DepositMoney.builder()
+        .commandId(commandId)
         .aggregateId(aggregateId)
         .correlationId(correlationId)
         .amount(BigDecimal.ZERO)

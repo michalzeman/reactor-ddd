@@ -3,6 +3,7 @@ buildscript {
     ext {
         springBootVersion = '2.1.7.RELEASE'
         springDependencyMavagementVersion = '1.0.8.RELEASE'
+        reactorVersion = '3.3.0.RELEASE'
     }
 
     repositories {
@@ -24,6 +25,7 @@ plugins {
 allprojects {
     apply plugin: 'java'
     apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
 
     repositories {
         jcenter()
@@ -37,11 +39,6 @@ allprojects {
         imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
     }
 
-    test {
-        useJUnitPlatform{
-            includeEngines 'junit-jupiter'
-        }
-    }
 }
 
 subprojects {
@@ -51,9 +48,17 @@ subprojects {
     sourceCompatibility = '11'
 
     dependencies {
+        // https://mvnrepository.com/artifact/com.google.guava/guava
+        implementation group: 'com.google.guava', name: 'guava', version: '28.1-jre'
         annotationProcessor 'org.immutables:value:2.7.5'
-        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.5.2'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    }
+
+    test {
+        useJUnitPlatform{
+            includeEngines 'junit-jupiter'
+        }
     }
 }
 
@@ -73,6 +78,7 @@ project(':bank-account:bank-account-application') {
 
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-webflux'
+        // https://mvnrepository.com/artifact/io.projectreactor/reactor-core
         implementation project(':bank-account:account-domain')
         implementation project(':bank-account:transaction-domain')
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -96,5 +102,14 @@ project(':shared-dependencies') {
     dependencies {
         api 'org.immutables:value:2.7.5'
         api group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    }
+}
+
+project(':common-persistance') {
+
+    dependencies {
+        api project(':common-api')
+        implementation group: 'io.projectreactor', name: 'reactor-core'
+        testImplementation 'io.projectreactor:reactor-test'
     }
 }

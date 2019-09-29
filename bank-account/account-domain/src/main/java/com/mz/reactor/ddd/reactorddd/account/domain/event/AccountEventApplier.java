@@ -10,7 +10,7 @@ public class AccountEventApplier implements EventApplier<AccountAggregate, Accou
   }
 
   private AccountAggregate applyMoneyWithdrawn(AccountAggregate aggregate, MoneyWithdrawn event) {
-    return aggregate;
+    return aggregate.applyMoneyWithdrawn(event);
   }
 
   private AccountAggregate applyMoneyDeposited(AccountAggregate aggregate, MoneyDeposited event) {

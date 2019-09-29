@@ -21,7 +21,9 @@ class TransactionCommandHandlerTest {
     var correlationId = UUID.randomUUID().toString();
     var toAccountId = UUID.randomUUID().toString();
     var fromAccountId = UUID.randomUUID().toString();
+    var commandId = UUID.randomUUID().toString();
     var command = CreateTransaction.builder()
+        .commandId(commandId)
         .aggregateId(aggregateId)
         .amount(BigDecimal.TEN)
         .correlationId(correlationId)
@@ -41,7 +43,9 @@ class TransactionCommandHandlerTest {
     var correlationId = UUID.randomUUID().toString();
     var toAccountId = UUID.randomUUID().toString();
     var fromAccountId = UUID.randomUUID().toString();
+    var commandId = UUID.randomUUID().toString();
     var command = CreateTransaction.builder()
+        .commandId(commandId)
         .aggregateId(aggregateId)
         .amount(BigDecimal.ZERO)
         .correlationId(correlationId)

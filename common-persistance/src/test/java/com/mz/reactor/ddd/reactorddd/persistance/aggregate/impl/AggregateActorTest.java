@@ -1,10 +1,6 @@
 package com.mz.reactor.ddd.reactorddd.persistance.aggregate.impl;
 
-import com.mz.reactor.ddd.common.api.command.Command;
-import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
-import com.mz.reactor.ddd.common.api.event.DomainEvent;
-import com.mz.reactor.ddd.common.api.event.EventApplier;
 import com.mz.reactor.ddd.common.api.valueobject.Id;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -12,91 +8,73 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class AggregateActorTest {
-
-  private final CommandHandler<TestAggregate, TestAggregateCommand> commandHandler = new CommandHandler<TestAggregate, TestAggregateCommand>() {
-    @Override
-    public CommandResult execute(TestAggregate aggregate, TestAggregateCommand command) {
-      return CommandResult.builder()
-          .commandId(command.commandId())
-          .statusCode(CommandResult.StatusCode.OK)
-          .addEvents()
-          .build();
-    }
-  };
-
-  private final EventApplier<TestAggregate, DomainEvent> eventApplier = new EventApplier<TestAggregate, DomainEvent>() {
-    @Override
-    public TestAggregate apply(TestAggregate aggregate, DomainEvent event) {
-      return new TestAggregate();
-    }
-  };
-
-  private final Function<Id, TestAggregate> aggregateFactory = new Function<Id, TestAggregate>() {
-    @Override
-    public TestAggregate apply(Id id) {
-      return new TestAggregate();
-    }
-  };
-
-  private final BiFunction<Id, List<DomainEvent>, List<DomainEvent>> persistAll = (id, events) -> events;
 
   @Test
   void execute() {
     var commandId = UUID.randomUUID().toString();
-    var command = new TestAggregateCommand(commandId);
+    var command = TestAggregateCommand.newBuilder()
+        .withCommandId(commandId)
+        .withValue(10)
+        .build();
 
-    var subject = new AggregateActor<TestAggregate, TestAggregateCommand>(
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
-        commandHandler,
-        eventApplier,
-        aggregateFactory,
+        TestFunctions.FN.commandHandler,
+        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.aggregateFactory,
         List.of(),
-        persistAll
+        TestFunctions.FN.persistAll
     );
 
     Mono<CommandResult> result = subject.execute(command);
     StepVerifier.create(result)
-        .expectNextMatches(r -> r.commandId().equals(commandId))
+        .expectNextMatches(r ->
+            r.commandId().equals(commandId) && r.statusCode().equals(CommandResult.StatusCode.OK))
         .expectComplete().verify();
   }
 
   @Test
   void onDestroy() {
-    var subject = new AggregateActor<TestAggregate, TestAggregateCommand>(
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
-        commandHandler,
-        eventApplier,
-        aggregateFactory,
+        TestFunctions.FN.commandHandler,
+        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.aggregateFactory,
         List.of(),
-        persistAll
+        TestFunctions.FN.persistAll
     );
 
     subject.onDestroy();
-    StepVerifier.create(subject.execute(new TestAggregateCommand(null)))
+    StepVerifier.create(subject.execute(TestAggregateCommand.newBuilder()
+        .withCommandId(String.format("comman: %s", 1))
+        .withValue(1)
+        .build()))
         .expectNextCount(0)
         .verifyComplete();
   }
 
   @Test
   void executeParallel() {
-    var subject = new AggregateActor<TestAggregate, TestAggregateCommand>(
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
-        commandHandler,
-        eventApplier,
-        aggregateFactory,
+        TestFunctions.FN.commandHandler,
+        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.aggregateFactory,
         List.of(),
-        persistAll
+        TestFunctions.FN.persistAll
     );
 
     var source = Flux.range(0, 100)
         .parallel(10)
-        .map(i -> new TestAggregateCommand("Command:" + i))
+        .map(i -> TestAggregateCommand.newBuilder()
+            .withCommandId(String.format("comman: %s", i))
+            .withValue(i)
+            .build())
         .flatMap(subject::execute);
 
     StepVerifier.create(source)
@@ -104,34 +82,48 @@ class AggregateActorTest {
         .verifyComplete();
   }
 
-  private static class TestAggregate {
+  @Test
+  public void testRecoveryState() {
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
+        new Id(UUID.randomUUID().toString()),
+        TestFunctions.FN.commandHandler,
+        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.aggregateFactory,
+        List.of(TestAggregateEvent.newBuilder()
+            .withAmount(10l)
+            .build(), TestAggregateEvent.newBuilder()
+            .withAmount(12l)
+            .build()),
+        TestFunctions.FN.persistAll
+    );
 
+    var rr = subject.getState(a -> a.getValue());
+    assertThat(rr).isEqualTo(22l);
   }
 
-  private static class TestAggregateCommand implements Command {
+  @Test
+  public void test_RecoveryStateAndExecuteCommand() {
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
+        new Id(UUID.randomUUID().toString()),
+        TestFunctions.FN.commandHandler,
+        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.aggregateFactory,
+        List.of(TestAggregateEvent.newBuilder()
+            .withAmount(10l)
+            .build(), TestAggregateEvent.newBuilder()
+            .withAmount(12l)
+            .build()),
+        TestFunctions.FN.persistAll
+    );
 
-    private final String commandId;
+    var cmd = TestAggregateCommand.newBuilder()
+        .withCommandId(String.format("comman: %s", 10))
+        .withValue(10)
+        .build();
 
-    public TestAggregateCommand(String commandId) {
-      this.commandId = Optional.ofNullable(commandId).orElseGet(() -> UUID.randomUUID().toString());
-    }
+    subject.execute(cmd).block();
 
-    @Override
-    public String commandId() {
-      return commandId;
-    }
-
-    @Override
-    public Optional<String> correlationId() {
-      return Optional.empty();
-    }
+    assertThat(subject.<Long>getState(a -> a.getValue())).isEqualTo(32);
   }
 
-  private static class TestAggregateEvent implements DomainEvent {
-
-    @Override
-    public Optional<String> correlationId() {
-      return Optional.empty();
-    }
-  }
 }

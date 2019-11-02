@@ -35,7 +35,7 @@ public interface CommandResult {
             .map(Command::commandId)
             .orElseGet(() -> UUID.randomUUID().toString()))
         .statusCode(StatusCode.BAD_COMMAND)
-        .events(List.of(event))
+        .events(Optional.ofNullable(event).map(List::of).orElseGet(() -> List.of()))
         .error(error)
         .build();
   }

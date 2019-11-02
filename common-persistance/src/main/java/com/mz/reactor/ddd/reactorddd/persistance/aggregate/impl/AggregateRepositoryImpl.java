@@ -9,6 +9,7 @@ import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.common.api.event.DomainEvent;
 import com.mz.reactor.ddd.common.api.event.EventApplier;
 import com.mz.reactor.ddd.common.api.valueobject.Id;
+import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateActor;
 import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateRepository;
 import reactor.core.publisher.Mono;
 
@@ -19,8 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class AggregateRepositoryImpl<A, C extends Command, S>
-    implements AggregateRepository<A, C, S> {
+public class AggregateRepositoryImpl<A, C extends Command, S> implements AggregateRepository<A, C, S> {
 
   private final Map<Id, List<DomainEvent>> eventSource = new HashMap<>();
 
@@ -69,7 +69,7 @@ public class AggregateRepositoryImpl<A, C extends Command, S>
   private AggregateActor<A, C> getFromCache(Id id) {
     try {
       return cache.get(id, () ->
-          new AggregateActor<>(
+          new AggregateActorImpl<>(
               id,
               commandHandler,
               eventApplier,
@@ -89,7 +89,7 @@ public class AggregateRepositoryImpl<A, C extends Command, S>
 
   @Override
   public Mono<S> findById(Id id) {
-    return getAggregate(id).map(a -> a.getState(this.stateFactory));
+    return getAggregate(id).flatMap(a -> a.getState(this.stateFactory));
   }
 
 }

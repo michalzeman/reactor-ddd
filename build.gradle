@@ -53,6 +53,7 @@ subprojects {
         annotationProcessor 'org.immutables:value:2.7.5'
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+        testCompile group: 'org.assertj', name: 'assertj-core', version: '3.14.0'
     }
 
     test {

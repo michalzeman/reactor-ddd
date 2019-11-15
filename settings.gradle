@@ -5,4 +5,5 @@ include 'bank-account:account-domain'
 include 'bank-account:transaction-domain'
 include 'shared-dependencies'
 include 'common-persistance'
+include 'common-components'
 

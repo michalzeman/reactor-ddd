@@ -114,3 +114,14 @@ project(':common-persistance') {
         testImplementation 'io.projectreactor:reactor-test'
     }
 }
+
+project(':common-components') {
+    apply plugin: 'io.spring.dependency-management'
+
+    dependencies {
+        api project(':common-api')
+        implementation group: 'io.projectreactor', name: 'reactor-core'
+        implementation 'org.springframework:spring-context'
+        testImplementation 'io.projectreactor:reactor-test'
+    }
+}

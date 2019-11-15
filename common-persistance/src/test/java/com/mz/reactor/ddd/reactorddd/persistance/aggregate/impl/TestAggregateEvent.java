@@ -2,6 +2,7 @@ package com.mz.reactor.ddd.reactorddd.persistance.aggregate.impl;
 
 import com.mz.reactor.ddd.common.api.event.DomainEvent;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,10 +14,13 @@ public class TestAggregateEvent implements DomainEvent {
 
   private String eventId;
 
+  private final Instant createdAt;
+
   private TestAggregateEvent(Builder builder) {
     correlationId = builder.correlationId;
     amount = builder.amount;
     eventId = builder.eventId;
+    createdAt = builder.createdAt;
   }
 
   public static Builder newBuilder() {
@@ -28,6 +32,7 @@ public class TestAggregateEvent implements DomainEvent {
     builder.correlationId = copy.getCorrelationId();
     builder.amount = copy.getAmount();
     builder.eventId = copy.getEventId();
+    builder.createdAt = copy.createdAt();
     return builder;
   }
 
@@ -55,6 +60,7 @@ public class TestAggregateEvent implements DomainEvent {
     private String correlationId;
     private Long amount;
     private String eventId;
+    private Instant createdAt = Instant.now();
 
     private Builder() {
     }
@@ -89,6 +95,17 @@ public class TestAggregateEvent implements DomainEvent {
      */
     public Builder withEventId(String val) {
       eventId = val;
+      return this;
+    }
+
+    /**
+     * Sets the {@code createdAt} and returns a reference to this Builder so that the methods can be chained together.
+     *
+     * @param val the {@code createdAt} to set
+     * @return a reference to this Builder
+     */
+    public Builder withCreatedAt(Instant val) {
+      createdAt = val;
       return this;
     }
 

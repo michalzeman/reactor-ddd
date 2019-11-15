@@ -14,15 +14,18 @@ import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateRepository;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class AggregateRepositoryImpl<A, C extends Command, S> implements AggregateRepository<A, C, S> {
 
-  private final Map<Id, List<DomainEvent>> eventSource = new HashMap<>();
+//  private final Map<Id, List<DomainEvent>> eventSource = new HashMap<>();
+
+  private final AtomicReference<Map<Id, List<DomainEvent>>> eventSource = new AtomicReference<>(new HashMap<>());
 
   private final Cache<Id, AggregateActor<A, C>> cache = CacheBuilder.newBuilder()
       .expireAfterAccess(Duration.ofMinutes(10))
@@ -51,13 +54,15 @@ public class AggregateRepositoryImpl<A, C extends Command, S> implements Aggrega
   }
 
   private List<DomainEvent> persistAll(Id id, List<DomainEvent> events) {
-    var eventsToStore = Optional.ofNullable(eventSource.get(id))
-        .map(es -> {
-          es.addAll(events);
-          return es;
-        })
-        .orElse(events);
-    eventSource.put(id, eventsToStore);
+    eventSource.updateAndGet(esMap -> {
+      var eventsToStore = Optional.ofNullable(esMap.get(id))
+          .map(es -> Stream.concat(es.stream(), events.stream())
+              .sorted(Comparator.comparing(DomainEvent::createdAt))
+              .collect(toList()))
+          .orElse(events);
+      esMap.put(id, eventsToStore);
+      return esMap;
+    });
     return events;
   }
 
@@ -74,7 +79,7 @@ public class AggregateRepositoryImpl<A, C extends Command, S> implements Aggrega
               commandHandler,
               eventApplier,
               aggregateFactory,
-              Optional.ofNullable(eventSource.get(id)).orElseGet(List::of),
+              Optional.ofNullable(eventSource.get().get(id)).orElseGet(List::of),
               this::persistAll));
     } catch (Exception e) {
       throw new RuntimeException(e);

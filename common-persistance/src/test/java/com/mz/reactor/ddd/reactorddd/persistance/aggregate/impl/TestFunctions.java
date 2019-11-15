@@ -13,39 +13,26 @@ import java.util.function.Function;
 public enum TestFunctions {
   FN;
 
-  public final CommandHandler<TestAggregate, TestAggregateCommand> commandHandler = new CommandHandler<TestAggregate, TestAggregateCommand>() {
-    @Override
-    public CommandResult execute(TestAggregate aggregate, TestAggregateCommand command) {
-      try {
-        var event = aggregate.validate(command);
-        return CommandResult.builder()
-            .commandId(command.commandId())
-            .statusCode(CommandResult.StatusCode.OK)
-            .addEvents(event)
-            .build();
-      } catch (Exception e) {
-        return CommandResult.fromError(
-            new RuntimeException(e),
-            null,
-            command
-        );
-      }
+  public final CommandHandler<TestAggregate, TestAggregateCommand> commandHandler = (aggregate, command) -> {
+    try {
+      var event = aggregate.validate(command);
+      return CommandResult.builder()
+          .commandId(command.commandId())
+          .statusCode(CommandResult.StatusCode.OK)
+          .addEvents(event)
+          .build();
+    } catch (Exception e) {
+      return CommandResult.fromError(
+          new RuntimeException(e),
+          null,
+          command
+      );
     }
   };
 
-  public final EventApplier<TestAggregate, DomainEvent> eventApplier = new EventApplier<TestAggregate, DomainEvent>() {
-    @Override
-    public TestAggregate apply(TestAggregate aggregate, DomainEvent event) {
-      return aggregate.apply((TestAggregateEvent) event);
-    }
-  };
+  public final EventApplier<TestAggregate, DomainEvent> eventApplier = (aggregate, event) -> aggregate.apply((TestAggregateEvent) event);
 
-  public final Function<Id, TestAggregate> aggregateFactory = new Function<Id, TestAggregate>() {
-    @Override
-    public TestAggregate apply(Id id) {
-      return new TestAggregate();
-    }
-  };
+  public final Function<Id, TestAggregate> aggregateFactory = TestAggregate::new;
 
   public final BiFunction<Id, List<DomainEvent>, List<DomainEvent>> persistAll = (id, events) -> events;
 

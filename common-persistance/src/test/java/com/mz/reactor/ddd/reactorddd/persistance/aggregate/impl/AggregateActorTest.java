@@ -90,15 +90,17 @@ class AggregateActorTest {
         TestFunctions.FN.eventApplier,
         TestFunctions.FN.aggregateFactory,
         List.of(TestAggregateEvent.newBuilder()
-            .withAmount(10l)
+            .withAmount(10L)
             .build(), TestAggregateEvent.newBuilder()
-            .withAmount(12l)
+            .withAmount(12L)
             .build()),
         TestFunctions.FN.persistAll
     );
 
-    var rr = subject.getState(a -> a.getValue());
-    assertThat(rr).isEqualTo(22l);
+    Mono<Long> source = subject.getState(TestAggregate::getValue);
+    StepVerifier.create(source)
+        .expectNext(22L)
+        .verifyComplete();
   }
 
   @Test
@@ -123,7 +125,10 @@ class AggregateActorTest {
 
     subject.execute(cmd).block();
 
-    assertThat(subject.<Long>getState(a -> a.getValue())).isEqualTo(32);
+    Mono<Long> source = subject.getState(a -> a.getValue());
+    StepVerifier.create(source)
+        .expectNext(32L)
+        .verifyComplete();
   }
 
 }

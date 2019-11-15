@@ -1,15 +1,20 @@
 package com.mz.reactor.ddd.reactorddd.persistance.aggregate.impl;
 
+import com.mz.reactor.ddd.common.api.valueobject.Id;
+
 public class TestAggregate {
+
+  private final Id id;
 
   private long value;
 
-  public TestAggregate() {
-    this(0);
+  public TestAggregate(Id id) {
+    this(0, id);
   }
 
-  public TestAggregate(long value) {
+  public TestAggregate(long value, Id id) {
     this.value = value;
+    this.id = id;
   }
 
   public TestAggregateEvent validate(TestAggregateCommand command) {
@@ -25,5 +30,9 @@ public class TestAggregate {
 
   public long getValue() {
     return value;
+  }
+
+  public Id getId() {
+    return id;
   }
 }

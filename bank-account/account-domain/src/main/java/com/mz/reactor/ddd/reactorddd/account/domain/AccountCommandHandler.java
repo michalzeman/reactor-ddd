@@ -1,10 +1,13 @@
-package com.mz.reactor.ddd.reactorddd.account.domain.command;
+package com.mz.reactor.ddd.reactorddd.account.domain;
 
 import com.mz.reactor.ddd.common.api.command.Command;
 import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.common.api.command.ImmutableCommandResult;
-import com.mz.reactor.ddd.reactorddd.account.domain.AccountAggregate;
+import com.mz.reactor.ddd.reactorddd.account.domain.command.AccountCommand;
+import com.mz.reactor.ddd.reactorddd.account.domain.command.CreateAccount;
+import com.mz.reactor.ddd.reactorddd.account.domain.command.DepositMoney;
+import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawMoney;
 import com.mz.reactor.ddd.reactorddd.account.domain.event.CreateAccountFailed;
 import com.mz.reactor.ddd.reactorddd.account.domain.event.DepositMoneyFailed;
 import com.mz.reactor.ddd.reactorddd.account.domain.event.WithdrawMoneyFailed;

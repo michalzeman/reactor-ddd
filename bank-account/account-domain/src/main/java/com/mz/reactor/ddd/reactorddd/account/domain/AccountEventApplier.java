@@ -1,7 +1,11 @@
-package com.mz.reactor.ddd.reactorddd.account.domain.event;
+package com.mz.reactor.ddd.reactorddd.account.domain;
 
 import com.mz.reactor.ddd.common.api.event.EventApplier;
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountAggregate;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.AccountCreated;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.AccountEvent;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyDeposited;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyWithdrawn;
 
 public class AccountEventApplier implements EventApplier<AccountAggregate, AccountEvent> {
 

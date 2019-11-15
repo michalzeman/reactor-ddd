@@ -90,10 +90,24 @@ project(':bank-account:bank-account-application') {
 project(':bank-account:account-domain') {
     dependencies {
         api project(':common-api')
+        api project(':bank-account:account-domain-api')
+    }
+}
+
+project(':bank-account:account-domain-api') {
+    dependencies {
+        api project(':common-api')
     }
 }
 
 project(':bank-account:transaction-domain') {
+    dependencies {
+        api project(':common-api')
+        api project(':bank-account:transaction-domain-api')
+    }
+}
+
+project(':bank-account:transaction-domain-api') {
     dependencies {
         api project(':common-api')
     }

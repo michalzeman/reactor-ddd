@@ -1,10 +1,13 @@
-package com.mz.reactor.ddd.reactorddd.transaction.domain.command;
+package com.mz.reactor.ddd.reactorddd.transaction.domain;
 
 import com.mz.reactor.ddd.common.api.command.Command;
 import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.common.api.command.ImmutableCommandResult;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionAggregate;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CreateTransaction;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.command.FinishTransaction;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.command.TransactionCommand;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.FinishTransactionFailed;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFailed;
 

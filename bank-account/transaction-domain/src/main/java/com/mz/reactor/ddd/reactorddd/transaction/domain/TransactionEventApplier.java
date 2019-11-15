@@ -1,7 +1,11 @@
-package com.mz.reactor.ddd.reactorddd.transaction.domain.event;
+package com.mz.reactor.ddd.reactorddd.transaction.domain;
 
 import com.mz.reactor.ddd.common.api.event.EventApplier;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionAggregate;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionCreated;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionEvent;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFailed;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFinished;
 
 public class TransactionEventApplier implements EventApplier<TransactionAggregate, TransactionEvent> {
 

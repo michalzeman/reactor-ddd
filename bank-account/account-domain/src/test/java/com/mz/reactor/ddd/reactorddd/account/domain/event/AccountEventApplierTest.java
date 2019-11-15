@@ -1,6 +1,7 @@
 package com.mz.reactor.ddd.reactorddd.account.domain.event;
 
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountAggregate;
+import com.mz.reactor.ddd.reactorddd.account.domain.AccountEventApplier;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

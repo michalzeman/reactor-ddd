@@ -2,6 +2,7 @@ package com.mz.reactor.ddd.reactorddd.account.domain.command;
 
 import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountAggregate;
+import com.mz.reactor.ddd.reactorddd.account.domain.AccountCommandHandler;
 import com.mz.reactor.ddd.reactorddd.account.domain.event.DepositMoneyFailed;
 import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyDeposited;
 import org.junit.jupiter.api.Assertions;
@@ -9,8 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AccountCommandHandlerTest {
 

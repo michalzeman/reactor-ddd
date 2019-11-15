@@ -1,14 +1,13 @@
 package com.mz.reactor.ddd.reactorddd.transaction.domain.event;
 
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionAggregate;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionEventApplier;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionEventApplierTest {
 

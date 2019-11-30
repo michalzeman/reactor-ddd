@@ -79,7 +79,11 @@ project(':bank-account:bank-account-application') {
 
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-webflux'
-        // https://mvnrepository.com/artifact/io.projectreactor/reactor-core
+        implementation project(':common-api')
+        implementation project(':common-components')
+        implementation project(':common-persistence')
+        implementation project(':bank-account:account-impl')
+        implementation project(':bank-account:account-api')
         implementation project(':bank-account:account-domain')
         implementation project(':bank-account:transaction-domain')
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -100,6 +104,27 @@ project(':bank-account:account-domain-api') {
     }
 }
 
+project(':bank-account:account-api') {
+    dependencies {
+        api project(':common-api')
+        api project(':common-components')
+        api project(':shared-spring-dependecies')
+        api project(':bank-account:account-domain-api')
+    }
+}
+
+project(':bank-account:account-impl') {
+    dependencies {
+        api project(':common-api')
+        api project(':common-components')
+        api project(':common-persistence')
+        api project(':shared-spring-dependecies')
+        implementation project(':bank-account:account-domain-api')
+        implementation project(':bank-account:account-api')
+        implementation project(':bank-account:account-domain')
+    }
+}
+
 project(':bank-account:transaction-domain') {
     dependencies {
         api project(':common-api')
@@ -116,11 +141,23 @@ project(':bank-account:transaction-domain-api') {
 project(':shared-dependencies') {
     dependencies {
         api 'org.immutables:value:2.7.5'
+        api 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
         api group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     }
 }
 
-project(':common-persistance') {
+project(':shared-spring-dependecies') {
+    apply plugin: 'io.spring.dependency-management'
+
+    dependencies {
+        api group: 'io.projectreactor', name: 'reactor-core'
+        api 'org.springframework:spring-context'
+        api 'org.springframework:spring-webflux'
+        api 'org.springframework:spring-core'
+    }
+}
+
+project(':common-persistence') {
 
     dependencies {
         api project(':common-api')
@@ -134,8 +171,7 @@ project(':common-components') {
 
     dependencies {
         api project(':common-api')
-        implementation group: 'io.projectreactor', name: 'reactor-core'
-        implementation 'org.springframework:spring-context'
+        api project(':shared-spring-dependecies')
         testImplementation 'io.projectreactor:reactor-test'
     }
 }

@@ -1,0 +1,18 @@
+package com.mz.reactor.ddd.reactorddd.persistance.aggregate;
+
+import com.mz.reactor.ddd.common.api.command.Command;
+import com.mz.reactor.ddd.common.api.command.CommandResult;
+import com.mz.reactor.ddd.common.api.event.DomainEvent;
+import reactor.core.publisher.Mono;
+
+import java.util.function.Function;
+
+public interface AggregateActor<A, C extends Command, E extends DomainEvent> {
+
+  <S> Mono<S> getState(Function<A, S> stateFactory);
+
+  void onDestroy();
+
+  Mono<CommandResult<E>> execute(C cmd);
+
+}

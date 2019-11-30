@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Value.Immutable
-public interface CommandResult {
+public interface CommandResult<E extends DomainEvent> {
 
   enum StatusCode {
     OK,
@@ -21,7 +21,7 @@ public interface CommandResult {
 
   StatusCode statusCode();
 
-  List<DomainEvent> events();
+  List<E> events();
 
   Optional<RuntimeException> error();
 
@@ -29,18 +29,18 @@ public interface CommandResult {
     return ImmutableCommandResult.builder();
   }
 
-  static CommandResult fromError(RuntimeException error, DomainEvent event, Command command) {
+  static <D extends DomainEvent> CommandResult<D> fromError(RuntimeException error, D event, Command command) {
     return builder()
         .commandId(Optional.ofNullable(command)
             .map(Command::commandId)
             .orElseGet(() -> UUID.randomUUID().toString()))
         .statusCode(StatusCode.BAD_COMMAND)
-        .events(Optional.ofNullable(event).map(List::of).orElseGet(() -> List.of()))
+        .events(Optional.ofNullable(event).map(List::of).orElseGet(List::of))
         .error(error)
         .build();
   }
 
-  static CommandResult badCommand(Command cmd) {
+  static <D extends DomainEvent> CommandResult<D> badCommand(Command cmd) {
     return builder()
         .commandId(Optional.ofNullable(cmd)
             .map(Command::commandId)

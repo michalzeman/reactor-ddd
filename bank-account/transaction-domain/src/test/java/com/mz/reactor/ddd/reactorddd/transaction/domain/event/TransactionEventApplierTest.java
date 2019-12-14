@@ -30,7 +30,7 @@ class TransactionEventApplierTest {
     var aggregate = new TransactionAggregate(aggregateId);
 
     //when
-    var status = subject.apply(aggregate, transactionCreated).getStatus();
+    var status = subject.apply(aggregate, transactionCreated).getState();
 
     //then
     Assertions.assertEquals(status.amount(), BigDecimal.TEN);
@@ -61,7 +61,7 @@ class TransactionEventApplierTest {
     subject.apply(aggregate, transactionCreated);
 
     //when
-    var status = subject.apply(aggregate, transactionFinished).getStatus();
+    var status = subject.apply(aggregate, transactionFinished).getState();
 
     //then
     Assertions.assertEquals(status.amount(), BigDecimal.TEN);
@@ -93,7 +93,7 @@ class TransactionEventApplierTest {
     subject.apply(aggregate, transactionCreated);
 
     //when
-    var status = subject.apply(aggregate, transactionFailed).getStatus();
+    var status = subject.apply(aggregate, transactionFailed).getState();
 
     //then
     Assertions.assertEquals(status.amount(), BigDecimal.TEN);

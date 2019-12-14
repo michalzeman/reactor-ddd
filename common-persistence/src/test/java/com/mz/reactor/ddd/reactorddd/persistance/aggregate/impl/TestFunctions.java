@@ -2,6 +2,7 @@ package com.mz.reactor.ddd.reactorddd.persistance.aggregate.impl;
 
 import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
+import com.mz.reactor.ddd.common.api.event.DomainEvent;
 import com.mz.reactor.ddd.common.api.event.EventApplier;
 import com.mz.reactor.ddd.common.api.valueobject.Id;
 
@@ -14,13 +15,13 @@ public enum TestFunctions {
 
   public final CommandHandler<TestAggregate, TestAggregateCommand> commandHandler = new CommandHandler<TestAggregate, TestAggregateCommand>() {
     @Override
-    public CommandResult<TestAggregateEvent> execute(TestAggregate aggregate, TestAggregateCommand command) {
+    public CommandResult execute(TestAggregate aggregate, TestAggregateCommand command) {
       try {
         TestAggregateEvent event = aggregate.validate(command);
         return CommandResult.builder()
             .commandId(command.commandId())
             .statusCode(CommandResult.StatusCode.OK)
-            .addEvents(event)
+            .events(List.of(event))
             .build();
       } catch (Exception e) {
         return CommandResult.fromError(
@@ -32,11 +33,16 @@ public enum TestFunctions {
     }
   };
 
-  public final EventApplier<TestAggregate, TestAggregateEvent> eventApplier = (aggregate, event) -> aggregate.apply((TestAggregateEvent) event);
+  public final EventApplier<TestAggregate> eventApplier = new EventApplier<TestAggregate>() {
+    @Override
+    public <E extends DomainEvent> TestAggregate apply(TestAggregate aggregate, E event) {
+      return aggregate.apply((TestAggregateEvent) event);
+    }
+  };
 
   public final Function<Id, TestAggregate> aggregateFactory = TestAggregate::new;
 
-  public final BiFunction<Id, List<TestAggregateEvent>, List<TestAggregateEvent>> persistAll = (id, events) -> events;
+  public final BiFunction<Id, List<? extends DomainEvent>, List<? extends DomainEvent>> persistAll = (id, events) -> events;
 
   public Function<String, String> mapTest1(String val1, String val2) {
     return v -> val1 + " and " + val2 + " not " + v;

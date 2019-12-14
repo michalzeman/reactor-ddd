@@ -1,5 +1,7 @@
 package com.mz.reactor.ddd.reactorddd.account.api;
 
+import com.mz.reactor.ddd.common.api.event.DomainEvent;
+import com.mz.reactor.ddd.reactorddd.account.domain.command.AccountCommand;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.CreateAccount;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.DepositMoney;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawMoney;
@@ -15,5 +17,7 @@ public interface AccountApplicationService {
   Mono<MoneyDeposited> execute(DepositMoney cmd);
 
   Mono<MoneyWithdrawn> execute(WithdrawMoney cmd);
+
+  <R extends DomainEvent> Mono<R> execute(AccountCommand cmd, Class<R> eventType);
 
 }

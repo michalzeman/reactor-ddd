@@ -1,6 +1,7 @@
 package com.mz.reactor.ddd.reactorddd.transaction.domain;
 
 import com.mz.reactor.ddd.common.api.valueobject.Id;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CancelTransaction;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CreateTransaction;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.command.FinishTransaction;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionCreated;
@@ -8,6 +9,7 @@ import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFailed;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFinished;
 
 import java.math.BigDecimal;
+import java.util.stream.Collectors;
 
 public class TransactionAggregate {
 
@@ -59,6 +61,20 @@ public class TransactionAggregate {
     }
   }
 
+  public TransactionFailed validateCancelTransaction(CancelTransaction command) {
+    if (status == TransactionStatus.CREATED) {
+      return TransactionFailed.builder()
+          .aggregateId(aggregateId.getValue())
+          .correlationId(command.correlationId())
+          .fromAccountId(fromAccount.getValue())
+          .toAccountId(toAccount.getValue())
+          .amount(this.amount)
+          .build();
+    } else {
+      throw new RuntimeException(String.format("Transaction in the state: %s can't be canceled!", status));
+    }
+  }
+
   public TransactionAggregate applyTransactionCreated(TransactionCreated created) {
     this.fromAccount = new Id(created.fromAccountId());
     this.toAccount = new Id(created.toAccountId());
@@ -77,7 +93,7 @@ public class TransactionAggregate {
     return this;
   }
 
-  public TransactionState getStatus() {
+  public TransactionState getState() {
     return TransactionState.builder()
         .amount(amount)
         .fromAccountId(fromAccount.getValue())

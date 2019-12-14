@@ -7,6 +7,8 @@ import com.mz.reactor.ddd.common.api.event.DomainEvent;
 import com.mz.reactor.ddd.common.api.event.EventApplier;
 import com.mz.reactor.ddd.common.api.valueobject.Id;
 import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateActor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.ReplayProcessor;
@@ -19,15 +21,17 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class AggregateActorImpl<A, C extends Command, E extends DomainEvent> implements AggregateActor<A, C, E> {
+public class AggregateActorImpl<A, C extends Command> implements AggregateActor<A, C> {
+
+  private static final Log log = LogFactory.getLog(AggregateActorImpl.class);
 
   private final Id id;
 
   private final CommandHandler<A, C> commandHandler;
 
-  private final EventApplier<A, E> eventApplier;
+  private final EventApplier<A> eventApplier;
 
-  private final BiFunction<Id, List<E>, List<E>> persistAll;
+  private final BiFunction<Id, List<? extends DomainEvent>, List<? extends DomainEvent>> persistAll;
 
   private A aggregate;
 
@@ -35,17 +39,17 @@ public class AggregateActorImpl<A, C extends Command, E extends DomainEvent> imp
 
   private final FluxSink<C> commandSink = commandProcessor.sink();
 
-  private final ReplayProcessor<CommandResult<E>> commandResultReplayProcessor = ReplayProcessor.create();
+  private final ReplayProcessor<CommandResult> commandResultReplayProcessor = ReplayProcessor.create();
 
-  private final FluxSink<CommandResult<E>> commandResultSink = commandResultReplayProcessor.sink();
+  private final FluxSink<CommandResult> commandResultSink = commandResultReplayProcessor.sink();
 
   public AggregateActorImpl(
       Id id,
       CommandHandler<A, C> commandHandler,
-      EventApplier<A, E> eventApplier,
+      EventApplier<A> eventApplier,
       Function<Id, A> aggregateFactory,
-      List<E> domainEvents,
-      BiFunction<Id, List<E>, List<E>> persistAll
+      List<? extends DomainEvent> domainEvents,
+      BiFunction<Id, List<? extends DomainEvent>, List<? extends DomainEvent>> persistAll
   ) {
     this.id = id;
     this.commandHandler = commandHandler;
@@ -60,11 +64,12 @@ public class AggregateActorImpl<A, C extends Command, E extends DomainEvent> imp
     commandProcessor
         .publishOn(Schedulers.newSingle(String.format("AggregateActor: %s", id)))
         .log()
+        .doOnError(error -> log.error("handleCommand -> ", error))
         .subscribe(this::handleCommand);
   }
 
   private void handleCommand(C cmd) {
-    var commandResult = commandHandler.<E>execute(this.aggregate, cmd);
+    var commandResult = commandHandler.execute(this.aggregate, cmd);
     this.aggregate = (A) persistAll
         .andThen(events -> events.stream()
             .reduce(this.aggregate, eventApplier::apply, (a1, a2) -> a2))
@@ -73,8 +78,8 @@ public class AggregateActorImpl<A, C extends Command, E extends DomainEvent> imp
   }
 
   @Override
-  public Mono<CommandResult<E>> execute(C cmd) {
-    Mono<CommandResult<E>> result = commandResultReplayProcessor.publishOn(Schedulers.elastic())
+  public Mono<CommandResult> execute(C cmd) {
+    Mono<CommandResult> result = commandResultReplayProcessor.publishOn(Schedulers.elastic())
         .filter(r -> r.commandId().equals(cmd.commandId()))
         .next();
     commandSink.next(cmd);

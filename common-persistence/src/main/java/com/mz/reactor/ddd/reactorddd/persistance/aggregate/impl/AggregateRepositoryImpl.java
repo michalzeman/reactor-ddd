@@ -21,19 +21,19 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
-public class AggregateRepositoryImpl<A, C extends Command, E extends DomainEvent,S> implements AggregateRepository<A, C, E, S> {
+public class AggregateRepositoryImpl<A, C extends Command,S> implements AggregateRepository<A, C, S> {
 
-  private final AtomicReference<Map<Id, List<E>>> eventSource = new AtomicReference<>(new HashMap<>());
+  private final AtomicReference<Map<Id, List<? extends DomainEvent>>> eventSource = new AtomicReference<>(new HashMap<>());
 
-  private final Cache<Id, AggregateActor<A, C, E>> cache = CacheBuilder.newBuilder()
+  private final Cache<Id, AggregateActor<A, C>> cache = CacheBuilder.newBuilder()
       .expireAfterAccess(Duration.ofMinutes(10))
-      .removalListener((RemovalListener<Id, AggregateActor<A, C, E>>) notification -> notification.getValue().onDestroy())
+      .removalListener((RemovalListener<Id, AggregateActor<A, C>>) notification -> notification.getValue().onDestroy())
       .build();
 
 
   private final CommandHandler<A, C> commandHandler;
 
-  private final EventApplier<A, E> eventApplier;
+  private final EventApplier<A> eventApplier;
 
   private final Function<Id, A> aggregateFactory;
 
@@ -41,7 +41,7 @@ public class AggregateRepositoryImpl<A, C extends Command, E extends DomainEvent
 
   public AggregateRepositoryImpl(
       CommandHandler<A, C> commandHandler,
-      EventApplier<A, E> eventApplier,
+      EventApplier<A> eventApplier,
       Function<Id, A> aggregateFactory,
       Function<A, S> stateFactory
   ) {
@@ -51,28 +51,28 @@ public class AggregateRepositoryImpl<A, C extends Command, E extends DomainEvent
     this.stateFactory = stateFactory;
   }
 
-  private List<E> persistAll(Id id, List<E> events) {
+  private List<? extends DomainEvent> persistAll(Id id, List<? extends DomainEvent> events) {
     eventSource.updateAndGet(esMap -> {
       var eventsToStore = Optional.ofNullable(esMap.get(id))
           .map(es -> Stream.concat(es.stream(), events.stream())
               .sorted(Comparator.comparing(DomainEvent::createdAt))
               .collect(toList()))
-          .orElse(events);
+          .orElse((List<DomainEvent>) events);
       esMap.put(id, eventsToStore);
       return esMap;
     });
     return events;
   }
 
-  private Mono<AggregateActor<A, C, E>> getAggregate(Id id) {
+  private Mono<AggregateActor<A, C>> getAggregate(Id id) {
     return Mono.just(id)
         .map(this::getFromCache);
   }
 
-  private AggregateActor<A, C, E> getFromCache(Id id) {
+  private AggregateActor<A, C> getFromCache(Id id) {
     try {
       return cache.get(id, () ->
-          new AggregateActorImpl<>(
+          new AggregateActorImpl<A, C>(
               id,
               commandHandler,
               eventApplier,
@@ -85,7 +85,7 @@ public class AggregateRepositoryImpl<A, C extends Command, E extends DomainEvent
   }
 
   @Override
-  public Mono<CommandResult<E>> execute(C cmd, Id aggregateId) {
+  public Mono<CommandResult> execute(C cmd, Id aggregateId) {
     return getAggregate(aggregateId)
         .flatMap(a -> a.execute(cmd));
   }

@@ -69,7 +69,7 @@ class TransactionAggregateTest {
         .build();
 
     var aggregate = new TransactionAggregate(aggregateId);
-    var state = aggregate.applyTransactionCreated(event).getStatus();
+    var state = aggregate.applyTransactionCreated(event).getState();
 
     assertEquals(state.aggregateId(), aggregateId);
     assertEquals(state.toAccountId(), toAccountId);
@@ -149,7 +149,7 @@ class TransactionAggregateTest {
         .fromAccountId(fromAccountId)
         .aggregateId(aggregateId)
         .build();
-    var state = aggregate.applyTransactionFinished(transactionFinished).getStatus();
+    var state = aggregate.applyTransactionFinished(transactionFinished).getState();
 
     //then
     assertEquals(state.status(), TransactionStatus.FINISHED);
@@ -181,7 +181,7 @@ class TransactionAggregateTest {
         .aggregateId(aggregateId)
         .amount(BigDecimal.TEN)
         .build();
-    var state = aggregate.applyTransactionFailed(transactionFailed).getStatus();
+    var state = aggregate.applyTransactionFailed(transactionFailed).getState();
 
     //then
     assertEquals(state.status(), TransactionStatus.FAILED);

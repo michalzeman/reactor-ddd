@@ -8,20 +8,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Value.Immutable
-public interface CommandResult<E extends DomainEvent> {
+public interface CommandResult {
 
   enum StatusCode {
     OK,
     BAD_COMMAND,
     FAILED,
-    NOT_MODIFIED;
+    NOT_MODIFIED
   }
 
   String commandId();
 
   StatusCode statusCode();
 
-  List<E> events();
+  List<? extends DomainEvent> events();
 
   Optional<RuntimeException> error();
 
@@ -29,23 +29,24 @@ public interface CommandResult<E extends DomainEvent> {
     return ImmutableCommandResult.builder();
   }
 
-  static <D extends DomainEvent> CommandResult<D> fromError(RuntimeException error, D event, Command command) {
+  static CommandResult fromError(RuntimeException error, List<? extends DomainEvent> events, Command command) {
     return builder()
         .commandId(Optional.ofNullable(command)
             .map(Command::commandId)
             .orElseGet(() -> UUID.randomUUID().toString()))
-        .statusCode(StatusCode.BAD_COMMAND)
-        .events(Optional.ofNullable(event).map(List::of).orElseGet(List::of))
+        .statusCode(StatusCode.FAILED)
+        .events(events)
         .error(error)
         .build();
   }
 
-  static <D extends DomainEvent> CommandResult<D> badCommand(Command cmd) {
+  static CommandResult badCommand(Command cmd) {
     return builder()
         .commandId(Optional.ofNullable(cmd)
             .map(Command::commandId)
             .orElseGet(() -> UUID.randomUUID().toString()))
         .statusCode(StatusCode.BAD_COMMAND)
+        .events(List.of())
         .build();
   }
 

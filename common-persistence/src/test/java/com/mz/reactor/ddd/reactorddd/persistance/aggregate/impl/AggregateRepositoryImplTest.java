@@ -18,7 +18,7 @@ class AggregateRepositoryImplTest {
 
   private final Function<TestAggregate, Tuple2<Id, Long>> getState = a -> Tuples.of(a.getId(), a.getValue());
 
-  AggregateRepositoryImpl<TestAggregate, TestAggregateCommand, TestAggregateEvent,Tuple2<Id, Long>> subject =
+  AggregateRepositoryImpl<TestAggregate, TestAggregateCommand,Tuple2<Id, Long>> subject =
       new AggregateRepositoryImpl<>(
           TestFunctions.FN.commandHandler,
           TestFunctions.FN.eventApplier,

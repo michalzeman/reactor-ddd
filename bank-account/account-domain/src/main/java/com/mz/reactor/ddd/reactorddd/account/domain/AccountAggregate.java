@@ -2,12 +2,8 @@ package com.mz.reactor.ddd.reactorddd.account.domain;
 
 import com.mz.reactor.ddd.common.api.valueobject.Id;
 import com.mz.reactor.ddd.common.api.valueobject.Money;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.CreateAccount;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.DepositMoney;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawMoney;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.AccountCreated;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyDeposited;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyWithdrawn;
+import com.mz.reactor.ddd.reactorddd.account.domain.command.*;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -50,6 +46,27 @@ public class AccountAggregate {
         .apply(command.balance());
   }
 
+  public TransferMoneyWithdrawn validateWithdrawTransferMoney(WithdrawTransferMoney command) {
+    return Money.validateValue
+        .andThen(v -> Money.validateWithdraw.apply(this.amount.getAmount(), command.amount()))
+        .andThen(v -> TransferMoneyWithdrawn.from(command))
+        .apply(command.amount());
+  }
+
+  public TransferMoneyDeposited validateDepositTransferMoney(DepositTransferMoney depositMoney) {
+    return Money.validateDepositMoney
+        .andThen(v ->
+            TransferMoneyDeposited.builder()
+                .correlationId(depositMoney.correlationId())
+                .aggregateId(aggregateId.getValue())
+                .amount(v)
+                .transactionId(depositMoney.transactionId())
+                .fromAccount(depositMoney.fromAccount())
+                .toAccount(depositMoney.toAccount())
+                .build())
+        .apply(depositMoney.amount());
+  }
+
   public AccountAggregate applyMoneyDeposited(MoneyDeposited moneyDeposited) {
     this.amount = this.amount.depositMoney(moneyDeposited.amount());
     return this;
@@ -62,6 +79,16 @@ public class AccountAggregate {
 
   public AccountAggregate applyMoneyWithdrawn(MoneyWithdrawn event) {
     this.amount = this.amount.withdrawMoney(event.amount());
+    return this;
+  }
+
+  public AccountAggregate applyTransferMoneyWithdrawn(TransferMoneyWithdrawn event) {
+    this.amount = this.amount.withdrawMoney(event.amount());
+    return this;
+  }
+
+  public AccountAggregate applyTransferMoneyDeposited(TransferMoneyDeposited event) {
+    this.amount = this.amount.depositMoney(event.amount());
     return this;
   }
 

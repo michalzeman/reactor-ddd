@@ -1,25 +1,34 @@
 package com.mz.reactor.ddd.reactorddd.account.domain;
 
-import com.mz.reactor.ddd.common.api.command.Command;
 import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.common.api.command.ImmutableCommandResult;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.AccountCommand;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.CreateAccount;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.DepositMoney;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawMoney;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.CreateAccountFailed;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.DepositMoneyFailed;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.WithdrawMoneyFailed;
+import com.mz.reactor.ddd.reactorddd.account.domain.command.*;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.*;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
 
 public class AccountCommandHandler implements CommandHandler<AccountAggregate, AccountCommand> {
 
-  private final Function<AccountCommand, ImmutableCommandResult> commandNotModified = cmd ->
-      (ImmutableCommandResult) CommandResult.notModified(cmd);
+
+
+  @Override
+  public CommandResult execute(AccountAggregate aggregate, AccountCommand command) {
+    if (command instanceof WithdrawMoney) {
+      return doWithdrawMoney(aggregate, (WithdrawMoney) command);
+    } else if (command instanceof CreateAccount) {
+      return doCreateAccount(aggregate, (CreateAccount) command);
+    } else if (command instanceof DepositMoney) {
+      return doDepositMoney(aggregate, (DepositMoney) command);
+    } else if (command instanceof WithdrawTransferMoney) {
+      return doWithdrawTransferMoney(aggregate, (WithdrawTransferMoney) command);
+    } else if (command instanceof DepositTransferMoney) {
+      return doDepositTransferMoney(aggregate, (DepositTransferMoney) command);
+    } else {
+      return CommandResult.badCommand(command);
+    }
+  }
 
   private CommandResult doWithdrawMoney(AccountAggregate aggregate, WithdrawMoney command) {
     try {
@@ -28,22 +37,15 @@ public class AccountCommandHandler implements CommandHandler<AccountAggregate, A
           .map(e -> CommandResult.builder()
               .commandId(command.commandId())
               .statusCode(CommandResult.StatusCode.OK)
-              .addEvents(e)
+              .events(List.of(e))
               .build())
-          .orElseGet(() -> commandNotModified.apply(command));
+          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
     } catch (RuntimeException e) {
-      return CommandResult.builder()
-          .commandId(Optional.ofNullable(command)
-              .map(Command::commandId)
-              .orElseGet(() -> UUID.randomUUID().toString()))
-          .addEvents(WithdrawMoneyFailed.builder()
-              .aggregateId(command.aggregateId())
-              .amount(command.amount())
-              .correlationId(command.correlationId())
-              .build())
-          .statusCode(CommandResult.StatusCode.FAILED)
-          .error(e)
-          .build();
+      return CommandResult.fromError(e, List.of(WithdrawMoneyFailed.builder()
+          .aggregateId(command.aggregateId())
+          .amount(command.amount())
+          .correlationId(command.correlationId())
+          .build()), command);
     }
   }
 
@@ -54,22 +56,19 @@ public class AccountCommandHandler implements CommandHandler<AccountAggregate, A
           .map(e -> CommandResult.builder()
               .commandId(command.commandId())
               .statusCode(CommandResult.StatusCode.OK)
-              .addEvents(e)
+              .events(List.of(e))
               .build())
-          .orElseGet(() -> commandNotModified.apply(command));
+          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
     } catch (RuntimeException e) {
-      return CommandResult.builder()
-          .commandId(Optional.ofNullable(command)
-              .map(Command::commandId)
-              .orElseGet(() -> UUID.randomUUID().toString()))
-          .addEvents(CreateAccountFailed.builder()
+      return CommandResult.fromError(
+          e,
+          List.of(CreateAccountFailed.builder()
               .aggregateId(command.aggregateId())
               .balance(command.balance())
               .correlationId(command.correlationId())
-              .build())
-          .statusCode(CommandResult.StatusCode.FAILED)
-          .error(e)
-          .build();
+              .build()),
+          command
+      );
     }
   }
 
@@ -80,35 +79,71 @@ public class AccountCommandHandler implements CommandHandler<AccountAggregate, A
           .map(e -> CommandResult.builder()
               .commandId(command.commandId())
               .statusCode(CommandResult.StatusCode.OK)
-              .addEvents(e)
+              .events(List.of(e))
               .build())
-          .orElseGet(() -> commandNotModified.apply(command));
+          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
     } catch (RuntimeException e) {
-      return CommandResult.builder()
-          .commandId(Optional.ofNullable(command)
-              .map(Command::commandId)
-              .orElseGet(() -> UUID.randomUUID().toString()))
-          .addEvents(DepositMoneyFailed.builder()
+      return CommandResult.fromError(
+          e,
+          List.of(DepositMoneyFailed.builder()
               .aggregateId(command.aggregateId())
               .amount(command.amount())
               .correlationId(command.correlationId())
-              .build())
-          .statusCode(CommandResult.StatusCode.FAILED)
-          .error(e)
-          .build();
+              .build()),
+          command
+      );
     }
   }
 
-  @Override
-  public CommandResult execute(AccountAggregate aggregate, AccountCommand command) {
-    if (command instanceof WithdrawMoney) {
-      return doWithdrawMoney(aggregate, (WithdrawMoney) command);
-    } else if (command instanceof CreateAccount) {
-      return doCreateAccount(aggregate, (CreateAccount) command);
-    } else if (command instanceof DepositMoney) {
-      return doDepositMoney(aggregate, (DepositMoney) command);
-    } else {
-      return CommandResult.badCommand(command);
+  private CommandResult doWithdrawTransferMoney(AccountAggregate aggregate, WithdrawTransferMoney command) {
+    try {
+      return Optional.of(command)
+          .map(aggregate::validateWithdrawTransferMoney)
+          .map(e -> CommandResult.builder()
+              .commandId(command.commandId())
+              .statusCode(CommandResult.StatusCode.OK)
+              .events(List.of(e))
+              .build())
+          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
+    } catch (RuntimeException e) {
+      return CommandResult.fromError(
+          e,
+          List.of(WithdrawTransferMoneyFailed.builder()
+              .transactionId(command.transactionId())
+              .aggregateId(command.aggregateId())
+              .amount(command.amount())
+              .correlationId(command.correlationId())
+              .fromAccount(command.fromAccount())
+              .toAccount(command.toAccount())
+              .build()),
+          command
+      );
+    }
+  }
+
+  private CommandResult doDepositTransferMoney(AccountAggregate aggregate, DepositTransferMoney command) {
+    try {
+      return Optional.of(command)
+          .map(aggregate::validateDepositTransferMoney)
+          .map(e -> CommandResult.builder()
+              .commandId(command.commandId())
+              .statusCode(CommandResult.StatusCode.OK)
+              .events(List.of(e))
+              .build())
+          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
+    } catch (RuntimeException e) {
+      return CommandResult.fromError(
+          e,
+          List.of(DepositTransferMoneyFailed.builder()
+              .transactionId(command.transactionId())
+              .aggregateId(command.aggregateId())
+              .amount(command.amount())
+              .correlationId(command.correlationId())
+              .fromAccount(command.fromAccount())
+              .toAccount(command.toAccount())
+              .build()),
+          command
+      );
     }
   }
 }

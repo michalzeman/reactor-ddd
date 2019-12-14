@@ -2,9 +2,11 @@ package com.mz.reactor.ddd.reactorddd.persistance.model;
 
 import com.mz.reactor.ddd.common.api.view.DomainView;
 
+import java.time.Instant;
+import java.util.Optional;
+
 public class TestView implements DomainView {
   private final String id;
-
   private final String value;
 
   private TestView(Builder builder) {
@@ -23,6 +25,11 @@ public class TestView implements DomainView {
   @Override
   public String id() {
     return id;
+  }
+
+  @Override
+  public Optional<String> correlationId() {
+    return Optional.empty();
   }
 
   public static Builder newBuilder() {

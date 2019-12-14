@@ -2,6 +2,7 @@ package com.mz.reactor.ddd.reactorddd.account.domain;
 
 import com.mz.reactor.ddd.reactorddd.account.domain.command.CreateAccount;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.DepositMoney;
+import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawTransferMoney;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawMoney;
 import com.mz.reactor.ddd.reactorddd.account.domain.event.AccountCreated;
 import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyDeposited;
@@ -151,6 +152,40 @@ class AccountAggregateTest {
         .build();
 
     //then
-   Assertions.assertThrows(RuntimeException.class, () -> aggregate.validateWithdrawMoney(withdrawMoney));
+    Assertions.assertThrows(RuntimeException.class, () -> aggregate.validateWithdrawMoney(withdrawMoney));
+  }
+
+  @Test
+  void applyMoneyTransferred() {
+    //given
+    var toAccountId = UUID.randomUUID().toString();
+    var aggregateId = UUID.randomUUID().toString();
+    var correlationId = UUID.randomUUID().toString();
+    var transactionId = UUID.randomUUID().toString();
+    var aggregate = new AccountAggregate(aggregateId);
+    var accountCreated = AccountCreated.builder()
+        .aggregateId(aggregateId)
+        .correlationId(correlationId)
+        .balance(BigDecimal.TEN)
+        .build();
+
+    aggregate.applyAccountCreated(accountCreated).getState();
+
+    var command = WithdrawTransferMoney.builder()
+        .transactionId(transactionId)
+        .aggregateId(aggregateId)
+        .fromAccount(aggregateId)
+        .toAccount(toAccountId)
+        .amount(BigDecimal.TEN)
+        .build();
+    Assertions.assertEquals(aggregate.getState().amount(), BigDecimal.TEN);
+
+    //when
+    var event = aggregate.validateWithdrawTransferMoney(command);
+    var state = aggregate.applyTransferMoneyWithdrawn(event).getState();
+
+    //then
+    Assertions.assertEquals(state.aggregateId(), aggregateId);
+    Assertions.assertEquals(state.amount(), BigDecimal.ZERO);
   }
 }

@@ -1,13 +1,31 @@
 package com.mz.reactor.ddd.reactorddd.account.domain;
 
+import com.mz.reactor.ddd.common.api.event.DomainEvent;
 import com.mz.reactor.ddd.common.api.event.EventApplier;
-import com.mz.reactor.ddd.reactorddd.account.domain.AccountAggregate;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.AccountCreated;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.AccountEvent;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyDeposited;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyWithdrawn;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.*;
 
-public class AccountEventApplier implements EventApplier<AccountAggregate, AccountEvent> {
+public class AccountEventApplier implements EventApplier<AccountAggregate> {
+
+  @Override
+  public <E extends DomainEvent> AccountAggregate apply(AccountAggregate aggregate, E event) {
+    if (event instanceof AccountCreated) {
+      return applyAccountCreated(aggregate, (AccountCreated) event);
+    } else if (event instanceof MoneyWithdrawn) {
+      return applyMoneyWithdrawn(aggregate, (MoneyWithdrawn) event);
+    } else if (event instanceof MoneyDeposited) {
+      return applyMoneyDeposited(aggregate, (MoneyDeposited) event);
+    } else if (event instanceof TransferMoneyWithdrawn) {
+      return applyTransferMoneyWithdrawn(aggregate, (TransferMoneyWithdrawn) event);
+    } else if (event instanceof TransferMoneyDeposited) {
+      return applyTransferMoneyDeposited(aggregate, (TransferMoneyDeposited) event);
+    } else {
+      return aggregate;
+    }
+  }
+
+  private AccountAggregate applyTransferMoneyDeposited(AccountAggregate aggregate, TransferMoneyDeposited event) {
+    return aggregate.applyTransferMoneyDeposited(event);
+  }
 
   private AccountAggregate applyAccountCreated(AccountAggregate aggregate, AccountCreated event) {
     return aggregate.applyAccountCreated(event);
@@ -21,16 +39,7 @@ public class AccountEventApplier implements EventApplier<AccountAggregate, Accou
     return aggregate.applyMoneyDeposited(event);
   }
 
-  @Override
-  public AccountAggregate apply(AccountAggregate aggregate, AccountEvent event) {
-    if (event instanceof AccountCreated) {
-      return applyAccountCreated(aggregate, (AccountCreated) event);
-    } else if (event instanceof MoneyWithdrawn) {
-      return applyMoneyWithdrawn(aggregate, (MoneyWithdrawn) event);
-    } else if (event instanceof MoneyDeposited) {
-      return applyMoneyDeposited(aggregate, (MoneyDeposited) event);
-    } else {
-      return aggregate;
-    }
+  private AccountAggregate applyTransferMoneyWithdrawn(AccountAggregate aggregate, TransferMoneyWithdrawn event) {
+    return aggregate.applyTransferMoneyWithdrawn(event);
   }
 }

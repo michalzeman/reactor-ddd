@@ -22,7 +22,7 @@ class AggregateActorTest {
         .withValue(10)
         .build();
 
-    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand, TestAggregateEvent>(
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
         TestFunctions.FN.eventApplier,
@@ -31,7 +31,7 @@ class AggregateActorTest {
         TestFunctions.FN.persistAll
     );
 
-    Mono<CommandResult<TestAggregateEvent>> result = subject.execute(command);
+    Mono<CommandResult> result = subject.execute(command);
     StepVerifier.create(result)
         .expectNextMatches(r ->
             r.commandId().equals(commandId) && r.statusCode().equals(CommandResult.StatusCode.OK))
@@ -40,7 +40,7 @@ class AggregateActorTest {
 
   @Test
   void onDestroy() {
-    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand, TestAggregateEvent>(
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
         TestFunctions.FN.eventApplier,
@@ -60,7 +60,7 @@ class AggregateActorTest {
 
   @Test
   void executeParallel() {
-    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand, TestAggregateEvent>(
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
         TestFunctions.FN.eventApplier,
@@ -84,7 +84,7 @@ class AggregateActorTest {
 
   @Test
   public void testRecoveryState() {
-    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand, TestAggregateEvent>(
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
         TestFunctions.FN.eventApplier,
@@ -105,7 +105,7 @@ class AggregateActorTest {
 
   @Test
   public void test_RecoveryStateAndExecuteCommand() {
-    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand, TestAggregateEvent>(
+    var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
         TestFunctions.FN.eventApplier,

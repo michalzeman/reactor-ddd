@@ -5,10 +5,7 @@ public class Id extends StringValue {
     super(value);
   }
 
-  @Override
-  public String toString() {
-    return "Id{" +
-        "value='" + value + '\'' +
-        '}';
+  public static Id of(String id) {
+    return new Id(id);
   }
 }

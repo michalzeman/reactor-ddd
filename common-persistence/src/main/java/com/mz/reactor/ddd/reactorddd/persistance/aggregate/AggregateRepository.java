@@ -11,4 +11,6 @@ public interface AggregateRepository<A, C extends Command,S> {
   Mono<CommandResult> execute(C cmd, Id aggregateId);
 
   Mono<S> findById(Id id);
+
+  Mono<S> findIfExists(Id id);
 }

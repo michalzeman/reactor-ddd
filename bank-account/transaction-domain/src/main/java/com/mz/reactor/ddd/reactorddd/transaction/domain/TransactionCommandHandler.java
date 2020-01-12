@@ -4,11 +4,7 @@ import com.mz.reactor.ddd.common.api.command.Command;
 import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.common.api.command.ImmutableCommandResult;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionAggregate;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CancelTransaction;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CreateTransaction;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.command.FinishTransaction;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.command.TransactionCommand;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.command.*;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.FinishTransactionFailed;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFailed;
 
@@ -30,9 +26,35 @@ public class TransactionCommandHandler implements CommandHandler<TransactionAggr
       return doFinishTransaction(aggregate, (FinishTransaction) command);
     } else if (command instanceof CancelTransaction) {
       return doCancelTransaction(aggregate, (CancelTransaction) command);
+    } else if (command instanceof ValidateTransactionMoneyWithdraw) {
+      return doValidateTransactionMoneyWithdraw(aggregate, (ValidateTransactionMoneyWithdraw) command);
+    } else if (command instanceof ValidateTransactionMoneyDeposit) {
+      return doValidateTransactionMoneyDeposit(aggregate, (ValidateTransactionMoneyDeposit) command);
     } else {
       return CommandResult.badCommand(command);
     }
+  }
+
+  private CommandResult doValidateTransactionMoneyDeposit(TransactionAggregate aggregate, ValidateTransactionMoneyDeposit command) {
+    return Optional.of(command)
+        .map(aggregate::validateTransactionMoneyDeposit)
+        .map(e -> CommandResult.builder()
+            .commandId(command.commandId())
+            .events(e)
+            .statusCode(CommandResult.StatusCode.OK)
+            .build())
+        .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
+  }
+
+  private CommandResult doValidateTransactionMoneyWithdraw(TransactionAggregate aggregate, ValidateTransactionMoneyWithdraw command) {
+    return Optional.of(command)
+        .map(aggregate::validateTransactionMoneyWithdraw)
+        .map(e -> CommandResult.builder()
+            .commandId(command.commandId())
+            .events(e)
+            .statusCode(CommandResult.StatusCode.OK)
+            .build())
+        .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
   }
 
   private CommandResult doCancelTransaction(TransactionAggregate aggregate, CancelTransaction command) {
@@ -41,7 +63,7 @@ public class TransactionCommandHandler implements CommandHandler<TransactionAggr
           .map(aggregate::validateCancelTransaction)
           .map(e -> CommandResult.builder()
               .commandId(command.commandId())
-              .events(List.of(e))
+              .events(e)
               .statusCode(CommandResult.StatusCode.OK)
               .build())
           .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));

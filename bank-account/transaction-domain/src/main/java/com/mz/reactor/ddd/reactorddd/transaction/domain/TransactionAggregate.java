@@ -1,15 +1,15 @@
 package com.mz.reactor.ddd.reactorddd.transaction.domain;
 
 import com.mz.reactor.ddd.common.api.valueobject.Id;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CancelTransaction;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CreateTransaction;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.command.FinishTransaction;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionCreated;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFailed;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionFinished;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.command.*;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.event.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TransactionAggregate {
 
@@ -23,9 +23,49 @@ public class TransactionAggregate {
 
   private TransactionStatus status;
 
+  private boolean moneyWithdrawn;
+
+  private boolean moneyDeposited;
+
   public TransactionAggregate(String aggregateId) {
     this.aggregateId = new Id(aggregateId);
     status = TransactionStatus.INITIALIZED;
+  }
+
+  public List<TransactionEvent> validateTransactionMoneyDeposit(ValidateTransactionMoneyDeposit cmd) {
+    if (this.status == TransactionStatus.FAILED) {
+      return List.of(TransactionDepositRolledBack.builder()
+          .aggregateId(this.aggregateId.getValue())
+          .amount(this.amount)
+          .correlationId(cmd.correlationId())
+          .toAccountId(this.toAccount.getValue())
+          .fromAccountId(this.fromAccount.getValue())
+          .build());
+    } else {
+      return handleFinishWhenMoneyDeposited(cmd.correlationId().orElseGet(() -> UUID.randomUUID().toString()))
+          .apply(List.of(TransactionMoneyDeposited.builder()
+              .aggregateId(this.aggregateId.getValue())
+              .correlationId(cmd.correlationId())
+              .build()));
+    }
+  }
+
+  public List<TransactionEvent> validateTransactionMoneyWithdraw(ValidateTransactionMoneyWithdraw cmd) {
+    if (this.status == TransactionStatus.FAILED) {
+      return List.of(TransactionWithdrawRolledBack.builder()
+          .aggregateId(this.aggregateId.getValue())
+          .amount(this.amount)
+          .correlationId(cmd.correlationId())
+          .toAccountId(this.toAccount.getValue())
+          .fromAccountId(this.fromAccount.getValue())
+          .build());
+    } else {
+      return handleFinishWhenMoneyWithdrawn(cmd.correlationId().orElseGet(() -> UUID.randomUUID().toString()))
+          .apply(List.of(TransactionMoneyWithdrawn.builder()
+              .aggregateId(this.aggregateId.getValue())
+              .correlationId(cmd.correlationId())
+              .build()));
+    }
   }
 
   public TransactionCreated validateCreateTransaction(CreateTransaction command) {
@@ -61,15 +101,19 @@ public class TransactionAggregate {
     }
   }
 
-  public TransactionFailed validateCancelTransaction(CancelTransaction command) {
+  public List<TransactionEvent> validateCancelTransaction(CancelTransaction command) {
     if (status == TransactionStatus.CREATED) {
-      return TransactionFailed.builder()
-          .aggregateId(aggregateId.getValue())
-          .correlationId(command.correlationId())
-          .fromAccountId(fromAccount.getValue())
-          .toAccountId(toAccount.getValue())
-          .amount(this.amount)
-          .build();
+      var correlationId = command.correlationId().orElseGet(() -> UUID.randomUUID().toString());
+      return handleMoneyDepositedDuringCancel(correlationId)
+          .andThen(handleMoneyWithdrawnDuringCancel(correlationId))
+          .apply(List.of(TransactionFailed.builder()
+              .aggregateId(aggregateId.getValue())
+              .correlationId(command.correlationId())
+              .fromAccountId(fromAccount.getValue())
+              .toAccountId(toAccount.getValue())
+              .amount(this.amount)
+              .build())
+          );
     } else {
       throw new RuntimeException(String.format("Transaction in the state: %s can't be canceled!", status));
     }
@@ -83,13 +127,23 @@ public class TransactionAggregate {
     return this;
   }
 
-  public TransactionAggregate applyTransactionFinished(TransactionFinished event) {
+  public TransactionAggregate applyTransactionFinished() {
     this.status = TransactionStatus.FINISHED;
     return this;
   }
 
-  public TransactionAggregate applyTransactionFailed(TransactionFailed event) {
+  public TransactionAggregate applyTransactionFailed() {
     this.status = TransactionStatus.FAILED;
+    return this;
+  }
+
+  public TransactionAggregate applyTransactionMoneyDeposited() {
+    this.moneyDeposited = true;
+    return this;
+  }
+
+  public TransactionAggregate applyTransactionMoneyWithdrawn() {
+    this.moneyWithdrawn = true;
     return this;
   }
 
@@ -99,7 +153,77 @@ public class TransactionAggregate {
         .fromAccountId(fromAccount.getValue())
         .toAccountId(toAccount.getValue())
         .aggregateId(aggregateId.getValue())
+        .moneyDeposited(moneyDeposited)
+        .moneyWithdrawn(moneyWithdrawn)
         .status(this.status)
         .build();
+  }
+
+  private Function<List<TransactionEvent>, List<TransactionEvent>> handleMoneyDepositedDuringCancel(String correlationId) {
+    return events -> {
+      if (moneyDeposited) {
+        return Stream.concat(events.stream(), Stream.of(TransactionDepositRolledBack.builder()
+            .aggregateId(this.aggregateId.getValue())
+            .amount(this.amount)
+            .correlationId(correlationId)
+            .toAccountId(this.toAccount.getValue())
+            .fromAccountId(this.fromAccount.getValue())
+            .build())).collect(Collectors.toList());
+      } else {
+        return events;
+      }
+    };
+  }
+
+  private Function<List<TransactionEvent>, List<TransactionEvent>> handleMoneyWithdrawnDuringCancel(String correlationId) {
+    return events -> {
+      if (moneyWithdrawn) {
+        return Stream.concat(events.stream(), Stream.of(TransactionWithdrawRolledBack.builder()
+            .aggregateId(this.aggregateId.getValue())
+            .amount(this.amount)
+            .correlationId(correlationId)
+            .toAccountId(this.toAccount.getValue())
+            .fromAccountId(this.fromAccount.getValue())
+            .build())).collect(Collectors.toList());
+      } else {
+        return events;
+      }
+    };
+  }
+
+  private Function<List<TransactionEvent>, List<TransactionEvent>> handleFinishWhenMoneyWithdrawn(String correlationId) {
+    return events -> {
+      if (moneyDeposited) {
+        return Stream.concat(
+            events.stream(),
+            Stream.of(TransactionFinished.builder()
+                .aggregateId(aggregateId.getValue())
+                .correlationId(correlationId)
+                .fromAccountId(fromAccount.getValue())
+                .toAccountId(toAccount.getValue())
+                .build()))
+            .collect(Collectors.toList());
+      } else {
+        return events;
+      }
+    };
+  }
+
+  private Function<List<TransactionEvent>, List<TransactionEvent>> handleFinishWhenMoneyDeposited(String correlationId) {
+    return events -> {
+      if (moneyWithdrawn) {
+        return Stream.concat(
+            events.stream(),
+            Stream.of(TransactionFinished.builder()
+                .aggregateId(aggregateId.getValue())
+                .correlationId(correlationId)
+                .fromAccountId(fromAccount.getValue())
+                .toAccountId(toAccount.getValue())
+                .build()))
+            .collect(Collectors.toList());
+      } else {
+        return events;
+      }
+    };
   }
 }

@@ -3,7 +3,7 @@ package com.mz.reactor.ddd.reactorddd.persistance.aggregate.impl;
 import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.common.api.event.DomainEvent;
-import com.mz.reactor.ddd.common.api.event.EventApplier;
+import com.mz.reactor.ddd.common.api.event.EventHandler;
 import com.mz.reactor.ddd.common.api.valueobject.Id;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public enum TestFunctions {
     }
   };
 
-  public final EventApplier<TestAggregate> eventApplier = new EventApplier<TestAggregate>() {
+  public final EventHandler<TestAggregate> eventHandler = new EventHandler<TestAggregate>() {
     @Override
     public <E extends DomainEvent> TestAggregate apply(TestAggregate aggregate, E event) {
       return aggregate.apply((TestAggregateEvent) event);

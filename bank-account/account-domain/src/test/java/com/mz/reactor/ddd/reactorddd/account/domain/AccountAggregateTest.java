@@ -1,12 +1,7 @@
 package com.mz.reactor.ddd.reactorddd.account.domain;
 
-import com.mz.reactor.ddd.reactorddd.account.domain.command.CreateAccount;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.DepositMoney;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawTransferMoney;
-import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawMoney;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.AccountCreated;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyDeposited;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyWithdrawn;
+import com.mz.reactor.ddd.reactorddd.account.domain.command.*;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -156,7 +151,7 @@ class AccountAggregateTest {
   }
 
   @Test
-  void applyMoneyTransferred() {
+  void applyTransferMoneyWithdrawn() {
     //given
     var toAccountId = UUID.randomUUID().toString();
     var aggregateId = UUID.randomUUID().toString();
@@ -181,11 +176,93 @@ class AccountAggregateTest {
     Assertions.assertEquals(aggregate.getState().amount(), BigDecimal.TEN);
 
     //when
-    var event = aggregate.validateWithdrawTransferMoney(command);
+    var event = (TransferMoneyWithdrawn) aggregate.validateWithdrawTransferMoney(command);
     var state = aggregate.applyTransferMoneyWithdrawn(event).getState();
+    var eventNoChange = aggregate.validateWithdrawTransferMoney(command);
 
     //then
     Assertions.assertEquals(state.aggregateId(), aggregateId);
     Assertions.assertEquals(state.amount(), BigDecimal.ZERO);
+    Assertions.assertTrue(eventNoChange instanceof AccountNoChanged);
+  }
+
+  @Test
+  void applyTransferMoneyDeposited() {
+    //given
+    var toAccountId = UUID.randomUUID().toString();
+    var aggregateId = UUID.randomUUID().toString();
+    var correlationId = UUID.randomUUID().toString();
+    var transactionId = UUID.randomUUID().toString();
+    var aggregate = new AccountAggregate(aggregateId);
+    var accountCreated = AccountCreated.builder()
+        .aggregateId(aggregateId)
+        .correlationId(correlationId)
+        .balance(BigDecimal.TEN)
+        .build();
+
+    aggregate.applyAccountCreated(accountCreated).getState();
+
+    var command = DepositTransferMoney.builder()
+        .transactionId(transactionId)
+        .aggregateId(aggregateId)
+        .fromAccount(aggregateId)
+        .toAccount(toAccountId)
+        .amount(BigDecimal.TEN)
+        .build();
+    Assertions.assertEquals(aggregate.getState().amount(), BigDecimal.TEN);
+
+    //when
+    var event = (TransferMoneyDeposited) aggregate.validateDepositTransferMoney(command);
+    var state = aggregate.applyTransferMoneyDeposited(event).getState();
+    var eventNoChange = aggregate.validateDepositTransferMoney(command);
+
+    //then
+    Assertions.assertEquals(state.aggregateId(), aggregateId);
+    Assertions.assertEquals(state.amount(), BigDecimal.valueOf(20));
+    Assertions.assertTrue(eventNoChange instanceof AccountNoChanged);
+  }
+
+  @Test
+  void applyFinishedTransaction() {
+    //given
+    var toAccountId = UUID.randomUUID().toString();
+    var aggregateId = UUID.randomUUID().toString();
+    var correlationId = UUID.randomUUID().toString();
+    var transactionId = UUID.randomUUID().toString();
+    var aggregate = new AccountAggregate(aggregateId);
+    var accountCreated = AccountCreated.builder()
+        .aggregateId(aggregateId)
+        .correlationId(correlationId)
+        .balance(BigDecimal.TEN)
+        .build();
+
+    aggregate.applyAccountCreated(accountCreated).getState();
+
+    var command = DepositTransferMoney.builder()
+        .transactionId(transactionId)
+        .aggregateId(aggregateId)
+        .fromAccount(aggregateId)
+        .toAccount(toAccountId)
+        .amount(BigDecimal.TEN)
+        .build();
+    Assertions.assertEquals(aggregate.getState().amount(), BigDecimal.TEN);
+
+    var finishTransaction = FinishOpenedTransaction.builder()
+        .aggregateId(aggregateId)
+        .correlationId(correlationId)
+        .transactionId(transactionId)
+        .build();
+
+    //when
+    var event = (TransferMoneyDeposited) aggregate.validateDepositTransferMoney(command);
+    aggregate.applyTransferMoneyDeposited(event);
+    var transactionFinished = (OpenedTransactionFinished)aggregate.validateFinishOpenedTransaction(finishTransaction);
+    var state = aggregate.applyOpenedTransactionFinished(transactionFinished).getState();
+
+    //then
+    Assertions.assertEquals(state.aggregateId(), aggregateId);
+    Assertions.assertEquals(state.amount(), BigDecimal.valueOf(20));
+    Assertions.assertFalse(state.openedTransactions().contains(transactionId));
+    Assertions.assertTrue(state.finishedTransactions().contains(transactionId));
   }
 }

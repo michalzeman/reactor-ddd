@@ -48,6 +48,16 @@ public class AggregateFacadeImpl<A, C extends Command, S> implements AggregateFa
         .doOnError(error -> log.error("execute -> event type: "+eventType, error));
   }
 
+  @Override
+  public Mono<S> findById(String aggregateId) {
+    return aggregateRepository.findById(Id.of(aggregateId));
+  }
+
+  @Override
+  public Mono<S> findByIdIfExists(String aggregateId) {
+    return aggregateRepository.findIfExists(Id.of(aggregateId));
+  }
+
   private Mono<? extends DomainEvent> processResult(String aggregateId, Class<? extends DomainEvent> eventType, CommandResult result) {
     switch (result.statusCode()) {
       case OK:

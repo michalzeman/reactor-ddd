@@ -12,7 +12,6 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class AggregateRepositoryImplTest {
 
@@ -21,7 +20,7 @@ class AggregateRepositoryImplTest {
   AggregateRepositoryImpl<TestAggregate, TestAggregateCommand,Tuple2<Id, Long>> subject =
       new AggregateRepositoryImpl<>(
           TestFunctions.FN.commandHandler,
-          TestFunctions.FN.eventApplier,
+          TestFunctions.FN.eventHandler,
           TestFunctions.FN.aggregateFactory,
           getState
       );

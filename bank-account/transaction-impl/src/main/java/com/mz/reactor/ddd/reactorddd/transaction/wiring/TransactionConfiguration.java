@@ -10,7 +10,7 @@ import com.mz.reactor.ddd.reactorddd.persistance.view.impl.ViewRepository;
 import com.mz.reactor.ddd.reactorddd.persistance.view.impl.impl.ViewRepositoryImpl;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionAggregate;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionCommandHandler;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionEventApplier;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionEventHandler;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionState;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.command.TransactionCommand;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,14 +26,14 @@ public class TransactionConfiguration {
   public static final String TRANSACTION_AGGREGATE_FACADE = "transactionAggregateFacade";
   public static final String TRANSACTION_VIEW_REPOSITORY = "transactionViewRepository";
 
-  private final TransactionEventApplier transactionEventApplier = new TransactionEventApplier();
+  private final TransactionEventHandler transactionEventHandler = new TransactionEventHandler();
   private final TransactionCommandHandler transactionCommandHandler = new TransactionCommandHandler();
   private final Function<Id, TransactionAggregate> aggregateFactory = id -> new TransactionAggregate(id.getValue());
   private final Function<TransactionAggregate, TransactionState> stateFactory = TransactionAggregate::getState;
 
   @Bean(TRANSACTION_AGGREGATE_REPOSITORY)
   public AggregateRepository<TransactionAggregate, TransactionCommand, TransactionState> getAggregateRepository() {
-    return new AggregateRepositoryImpl<>(transactionCommandHandler, transactionEventApplier, aggregateFactory, stateFactory);
+    return new AggregateRepositoryImpl<>(transactionCommandHandler, transactionEventHandler, aggregateFactory, stateFactory);
   }
 
   @Bean(TRANSACTION_AGGREGATE_FACADE)

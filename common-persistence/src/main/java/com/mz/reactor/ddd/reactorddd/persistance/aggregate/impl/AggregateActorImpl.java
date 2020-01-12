@@ -4,7 +4,7 @@ import com.mz.reactor.ddd.common.api.command.Command;
 import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.common.api.event.DomainEvent;
-import com.mz.reactor.ddd.common.api.event.EventApplier;
+import com.mz.reactor.ddd.common.api.event.EventHandler;
 import com.mz.reactor.ddd.common.api.valueobject.Id;
 import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateActor;
 import org.apache.commons.logging.Log;
@@ -29,7 +29,7 @@ public class AggregateActorImpl<A, C extends Command> implements AggregateActor<
 
   private final CommandHandler<A, C> commandHandler;
 
-  private final EventApplier<A> eventApplier;
+  private final EventHandler<A> eventHandler;
 
   private final BiFunction<Id, List<? extends DomainEvent>, List<? extends DomainEvent>> persistAll;
 
@@ -46,19 +46,19 @@ public class AggregateActorImpl<A, C extends Command> implements AggregateActor<
   public AggregateActorImpl(
       Id id,
       CommandHandler<A, C> commandHandler,
-      EventApplier<A> eventApplier,
+      EventHandler<A> eventHandler,
       Function<Id, A> aggregateFactory,
       List<? extends DomainEvent> domainEvents,
       BiFunction<Id, List<? extends DomainEvent>, List<? extends DomainEvent>> persistAll
   ) {
     this.id = id;
     this.commandHandler = commandHandler;
-    this.eventApplier = eventApplier;
+    this.eventHandler = eventHandler;
     this.persistAll = persistAll;
     this.aggregate = domainEvents.stream()
         .reduce(
             aggregateFactory.apply(id),
-            eventApplier::apply,
+            eventHandler::apply,
             (prevAg, nextAg) -> nextAg
         );
     commandProcessor
@@ -72,7 +72,7 @@ public class AggregateActorImpl<A, C extends Command> implements AggregateActor<
     var commandResult = commandHandler.execute(this.aggregate, cmd);
     this.aggregate = (A) persistAll
         .andThen(events -> events.stream()
-            .reduce(this.aggregate, eventApplier::apply, (a1, a2) -> a2))
+            .reduce(this.aggregate, eventHandler::apply, (a1, a2) -> a2))
         .apply(id, commandResult.events());
     commandResultSink.next(commandResult);
   }

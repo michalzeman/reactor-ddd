@@ -25,7 +25,7 @@ class AggregateActorTest {
     var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
-        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.eventHandler,
         TestFunctions.FN.aggregateFactory,
         List.of(),
         TestFunctions.FN.persistAll
@@ -43,7 +43,7 @@ class AggregateActorTest {
     var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
-        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.eventHandler,
         TestFunctions.FN.aggregateFactory,
         List.of(),
         TestFunctions.FN.persistAll
@@ -63,7 +63,7 @@ class AggregateActorTest {
     var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
-        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.eventHandler,
         TestFunctions.FN.aggregateFactory,
         List.of(),
         TestFunctions.FN.persistAll
@@ -87,7 +87,7 @@ class AggregateActorTest {
     var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
-        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.eventHandler,
         TestFunctions.FN.aggregateFactory,
         List.of(TestAggregateEvent.newBuilder()
             .withAmount(10L)
@@ -108,7 +108,7 @@ class AggregateActorTest {
     var subject = new AggregateActorImpl<TestAggregate, TestAggregateCommand>(
         new Id(UUID.randomUUID().toString()),
         TestFunctions.FN.commandHandler,
-        TestFunctions.FN.eventApplier,
+        TestFunctions.FN.eventHandler,
         TestFunctions.FN.aggregateFactory,
         List.of(TestAggregateEvent.newBuilder()
             .withAmount(10l)

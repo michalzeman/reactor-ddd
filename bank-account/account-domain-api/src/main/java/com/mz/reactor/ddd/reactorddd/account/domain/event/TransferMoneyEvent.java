@@ -6,9 +6,9 @@ public interface TransferMoneyEvent extends AccountEvent {
 
   String transactionId();
 
-  String fromAccount();
+  String fromAccountId();
 
-  String toAccount();
+  String toAccountId();
 
   BigDecimal amount();
 

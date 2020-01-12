@@ -1,7 +1,7 @@
 package com.mz.reactor.ddd.reactorddd.transaction.domain.event;
 
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionAggregate;
-import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionEventApplier;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionEventHandler;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-class TransactionEventApplierTest {
+class TransactionEventHandlerTest {
 
-  TransactionEventApplier subject = new TransactionEventApplier();
+  TransactionEventHandler subject = new TransactionEventHandler();
 
   @Test
   void apply_TransactionCreated() {

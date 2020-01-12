@@ -7,7 +7,7 @@ import com.mz.reactor.ddd.common.api.command.Command;
 import com.mz.reactor.ddd.common.api.command.CommandHandler;
 import com.mz.reactor.ddd.common.api.command.CommandResult;
 import com.mz.reactor.ddd.common.api.event.DomainEvent;
-import com.mz.reactor.ddd.common.api.event.EventApplier;
+import com.mz.reactor.ddd.common.api.event.EventHandler;
 import com.mz.reactor.ddd.common.api.valueobject.Id;
 import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateActor;
 import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateRepository;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
-public class AggregateRepositoryImpl<A, C extends Command,S> implements AggregateRepository<A, C, S> {
+public class AggregateRepositoryImpl<A, C extends Command, S> implements AggregateRepository<A, C, S> {
 
   private final AtomicReference<Map<Id, List<? extends DomainEvent>>> eventSource = new AtomicReference<>(new HashMap<>());
 
@@ -33,7 +33,7 @@ public class AggregateRepositoryImpl<A, C extends Command,S> implements Aggregat
 
   private final CommandHandler<A, C> commandHandler;
 
-  private final EventApplier<A> eventApplier;
+  private final EventHandler<A> eventHandler;
 
   private final Function<Id, A> aggregateFactory;
 
@@ -41,12 +41,12 @@ public class AggregateRepositoryImpl<A, C extends Command,S> implements Aggregat
 
   public AggregateRepositoryImpl(
       CommandHandler<A, C> commandHandler,
-      EventApplier<A> eventApplier,
+      EventHandler<A> eventHandler,
       Function<Id, A> aggregateFactory,
       Function<A, S> stateFactory
   ) {
     this.commandHandler = commandHandler;
-    this.eventApplier = eventApplier;
+    this.eventHandler = eventHandler;
     this.aggregateFactory = aggregateFactory;
     this.stateFactory = stateFactory;
   }
@@ -75,7 +75,7 @@ public class AggregateRepositoryImpl<A, C extends Command,S> implements Aggregat
           new AggregateActorImpl<A, C>(
               id,
               commandHandler,
-              eventApplier,
+              eventHandler,
               aggregateFactory,
               Optional.ofNullable(eventSource.get().get(id)).orElseGet(List::of),
               this::persistAll));
@@ -93,6 +93,14 @@ public class AggregateRepositoryImpl<A, C extends Command,S> implements Aggregat
   @Override
   public Mono<S> findById(Id id) {
     return getAggregate(id).flatMap(a -> a.getState(this.stateFactory));
+  }
+
+  @Override
+  public Mono<S> findIfExists(Id id) {
+    return Mono.just(id)
+        .flatMap(i -> Optional.ofNullable(cache.getIfPresent(i))
+            .map(a -> a.getState(this.stateFactory))
+            .orElseGet(Mono::empty));
   }
 
 }

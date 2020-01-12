@@ -9,6 +9,7 @@ import org.immutables.value.Value;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Value.Immutable
 @JsonSerialize(as = ImmutableAccountState.class)
@@ -25,7 +26,10 @@ public interface AccountState extends DomainView {
   BigDecimal amount();
 
   @JsonIgnore
-  List<String> openedTransactions();
+  Set<String> openedTransactions();
+
+  @JsonIgnore
+  Set<String> finishedTransactions();
 
   static ImmutableAccountState.Builder builder() {
     return ImmutableAccountState.builder();

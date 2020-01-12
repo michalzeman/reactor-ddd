@@ -24,6 +24,10 @@ public interface TransactionState extends DomainView {
 
   BigDecimal amount();
 
+  boolean moneyWithdrawn();
+
+  boolean moneyDeposited();
+
   TransactionStatus status();
 
   static ImmutableTransactionState.Builder builder() {

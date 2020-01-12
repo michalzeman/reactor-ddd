@@ -26,12 +26,9 @@ public class AccountApplicationServiceImpl implements AccountApplicationService 
   private final AggregateFacade<AccountAggregate, AccountCommand, AccountState> aggregateFacade;
 
   public AccountApplicationServiceImpl(
-      ApplicationMessageBus bus,
       @Qualifier("accountAggregateFacade") AggregateFacade<AccountAggregate, AccountCommand, AccountState> aggregateFacade
   ) {
     this.aggregateFacade = aggregateFacade;
-    handleTransactionCreated(bus);
-    handleTransferMoneyWithdrawn(bus);
   }
 
   public <R extends DomainEvent> Mono<R> execute(AccountCommand cmd, Class<R> eventType) {
@@ -57,52 +54,4 @@ public class AccountApplicationServiceImpl implements AccountApplicationService 
         .cast(MoneyWithdrawn.class);
   }
 
-//  private void handleTransactionFailed(ApplicationMessageBus bus) {
-//    bus.messagesStream()
-//        .filter(m -> m instanceof TransactionFailed)
-//        .cast(TransactionFailed.class)
-//        .flatMap(e -> execute(DepositMoney.builder()
-//            .correlationId(e.correlationId())
-//            .aggregateId(e.fromAccountId())
-//            .amount(e.amount())
-//            .build()))
-//        .map(Optional::of)
-//        .doOnError(e -> log.error("handleTransactionFailed -> ", e))
-//        .retry()
-//        .subscribe();
-//  }
-
-  private void handleTransactionCreated(ApplicationMessageBus bus) {
-    bus.messagesStream()
-        .filter(m -> m instanceof TransactionCreated)
-        .cast(TransactionCreated.class)
-        .flatMap(e -> execute(WithdrawTransferMoney.builder()
-            .aggregateId(e.fromAccountId())
-            .transactionId(e.aggregateId())
-            .correlationId(e.correlationId())
-            .fromAccount(e.fromAccountId())
-            .toAccount(e.toAccountId())
-            .amount(e.amount())
-            .build(), TransferMoneyWithdrawn.class))
-        .doOnError(e -> log.error("handleTransactionCreated -> ", e))
-        .retry()
-        .subscribe();
-  }
-
-  private void handleTransferMoneyWithdrawn(ApplicationMessageBus bus) {
-    bus.messagesStream()
-        .filter(m -> m instanceof TransferMoneyWithdrawn)
-        .cast(TransferMoneyWithdrawn.class)
-        .flatMap(e -> execute(DepositTransferMoney.builder()
-            .aggregateId(e.toAccount())
-            .transactionId(e.transactionId())
-            .correlationId(e.correlationId())
-            .fromAccount(e.fromAccount())
-            .toAccount(e.toAccount())
-            .amount(e.amount())
-            .build(), TransferMoneyDeposited.class))
-        .doOnError(e -> log.error("handleTransferMoneyWithdrawn -> ", e))
-        .retry()
-        .subscribe();
-  }
 }

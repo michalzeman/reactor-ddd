@@ -22,8 +22,8 @@ public interface TransferMoneyWithdrawn extends TransferMoneyEvent {
         .aggregateId(cmd.aggregateId())
         .amount(cmd.amount())
         .correlationId(cmd.correlationId())
-        .fromAccount(cmd.fromAccount())
-        .toAccount(cmd.toAccount())
+        .fromAccountId(cmd.fromAccount())
+        .toAccountId(cmd.toAccount())
         .build();
   }
 

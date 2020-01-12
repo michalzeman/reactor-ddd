@@ -1,7 +1,7 @@
 package com.mz.reactor.ddd.reactorddd.account.domain.event;
 
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountAggregate;
-import com.mz.reactor.ddd.reactorddd.account.domain.AccountEventApplier;
+import com.mz.reactor.ddd.reactorddd.account.domain.AccountEventHandler;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -9,9 +9,9 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AccountEventApplierTest {
+class AccountEventHandlerTest {
 
-  AccountEventApplier applier = new AccountEventApplier();
+  AccountEventHandler applier = new AccountEventHandler();
 
   @Test
   void applyAccountCreated() {

@@ -4,7 +4,7 @@ import com.mz.reactor.ddd.common.api.valueobject.Id;
 import com.mz.reactor.ddd.common.components.bus.ApplicationMessageBus;
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountAggregate;
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountCommandHandler;
-import com.mz.reactor.ddd.reactorddd.account.domain.AccountEventApplier;
+import com.mz.reactor.ddd.reactorddd.account.domain.AccountEventHandler;
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountState;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.AccountCommand;
 import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateFacade;
@@ -26,7 +26,7 @@ public class AccountConfiguration {
   public static final String ACCOUNT_AGGREGATE_FACADE = "accountAggregateFacade";
   public static final String ACCOUNT_VIEW_REPOSITORY = "accountViewRepository";
 
-  private final AccountEventApplier accountEventApplier = new AccountEventApplier();
+  private final AccountEventHandler accountEventApplier = new AccountEventHandler();
   private final AccountCommandHandler accountCommandHandler = new AccountCommandHandler();
   private final Function<Id, AccountAggregate> aggregateFactory = id -> new AccountAggregate(id.getValue());
   private final Function<AccountAggregate, AccountState> stateFactory = AccountAggregate::getState;

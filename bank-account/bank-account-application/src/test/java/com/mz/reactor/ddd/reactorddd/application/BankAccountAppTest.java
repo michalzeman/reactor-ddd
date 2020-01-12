@@ -7,6 +7,7 @@ import com.mz.reactor.ddd.reactorddd.account.domain.command.CreateAccount;
 import com.mz.reactor.ddd.reactorddd.transaction.api.model.CreateTransactionRequest;
 import com.mz.reactor.ddd.reactorddd.transaction.api.model.CreateTransactionResponse;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionState;
+import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionStatus;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.command.CreateTransaction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.registerCustomDateFormat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,7 +31,7 @@ public class BankAccountAppTest {
   WebTestClient webTestClient;
 
   @Test
-  public void testApp() {
+  public void testApp() throws InterruptedException {
     var correlationId = "testScenarioCreateAccountsAndTransferMoney";
 
     var accountId1 = "account_1";
@@ -44,7 +44,9 @@ public class BankAccountAppTest {
 
     var transactionId = createTransaction(accountId1, accountId2, correlationId, BigDecimal.TEN).payload().aggregateId();
 
-    getTransaction(transactionId);
+    Thread.sleep(2000l);
+
+    assertThat(getTransaction(transactionId).status()).isEqualByComparingTo(TransactionStatus.FINISHED);
 
     assertThat(getAccount(accountId1).amount().compareTo(BigDecimal.valueOf(90))).isEqualTo(0);
     assertThat(getAccount(accountId2).amount().compareTo(BigDecimal.valueOf(110))).isEqualTo(0);

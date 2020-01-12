@@ -1,10 +1,10 @@
 package com.mz.reactor.ddd.reactorddd.account.domain;
 
 import com.mz.reactor.ddd.common.api.event.DomainEvent;
-import com.mz.reactor.ddd.common.api.event.EventApplier;
+import com.mz.reactor.ddd.common.api.event.EventHandler;
 import com.mz.reactor.ddd.reactorddd.account.domain.event.*;
 
-public class AccountEventApplier implements EventApplier<AccountAggregate> {
+public class AccountEventHandler implements EventHandler<AccountAggregate> {
 
   @Override
   public <E extends DomainEvent> AccountAggregate apply(AccountAggregate aggregate, E event) {
@@ -18,9 +18,15 @@ public class AccountEventApplier implements EventApplier<AccountAggregate> {
       return applyTransferMoneyWithdrawn(aggregate, (TransferMoneyWithdrawn) event);
     } else if (event instanceof TransferMoneyDeposited) {
       return applyTransferMoneyDeposited(aggregate, (TransferMoneyDeposited) event);
+    } else if (event instanceof OpenedTransactionFinished) {
+      return applyOpenedTransactionFinished(aggregate, (OpenedTransactionFinished) event);
     } else {
       return aggregate;
     }
+  }
+
+  private AccountAggregate applyOpenedTransactionFinished(AccountAggregate aggregate, OpenedTransactionFinished event) {
+    return aggregate.applyOpenedTransactionFinished(event);
   }
 
   private AccountAggregate applyTransferMoneyDeposited(AccountAggregate aggregate, TransferMoneyDeposited event) {

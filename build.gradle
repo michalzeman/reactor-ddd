@@ -4,6 +4,8 @@ buildscript {
         springBootVersion = '2.1.7.RELEASE'
         springDependencyMavagementVersion = '1.0.8.RELEASE'
         reactorVersion = '3.3.0.RELEASE'
+        immutablesVersion = '2.7.5'
+        jacksonVersion = '2.10.1'
     }
 
     repositories {
@@ -32,6 +34,8 @@ allprojects {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        maven { url 'https://repo.spring.io/milestone' }
+        maven { url 'https://repo.spring.io/snapshot' }
     }
 
     dependencyManagement {
@@ -48,6 +52,7 @@ subprojects {
 
     dependencies {
         implementation group: 'com.google.guava', name: 'guava', version: '28.1-jre'
+        implementation 'io.projectreactor.tools:blockhound:1.0.0.RC1'
         annotationProcessor 'org.immutables:value:2.7.5'
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
@@ -55,7 +60,7 @@ subprojects {
     }
 
     test {
-        useJUnitPlatform{
+        useJUnitPlatform {
             includeEngines 'junit-jupiter'
         }
     }
@@ -183,9 +188,9 @@ project(':bank-account:transaction-domain-api') {
 
 project(':shared-dependencies') {
     dependencies {
-        api 'org.immutables:value:2.7.5'
-        api 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
-        api 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.10.1'
+        api "org.immutables:value:$immutablesVersion"
+        api "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+        api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
         api group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     }
 }

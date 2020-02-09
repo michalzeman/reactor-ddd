@@ -40,8 +40,7 @@ public class TransactionHandler implements HttpHandler {
   }
 
   public Mono<ServerResponse> createTransaction(ServerRequest request) {
-    return request
-        .bodyToMono(CreateTransactionRequest.class)
+    return bodyToMono(request, CreateTransactionRequest.class)
         .map(CreateTransactionRequest::payload)
         .flatMap(service::execute)
         .map(CreateTransactionResponse::from)

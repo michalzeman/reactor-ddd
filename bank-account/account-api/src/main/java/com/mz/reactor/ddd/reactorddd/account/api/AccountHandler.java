@@ -3,6 +3,7 @@ package com.mz.reactor.ddd.reactorddd.account.api;
 import com.mz.reactor.ddd.common.components.http.HttpHandler;
 import com.mz.reactor.ddd.reactorddd.account.api.model.*;
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountState;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -10,6 +11,7 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 
@@ -20,9 +22,12 @@ public class AccountHandler implements HttpHandler {
 
   private final AccountQuery accountQuery;
 
-  public AccountHandler(AccountApplicationService service, AccountQuery accountQuery) {
+  private final Scheduler scheduler;
+
+  public AccountHandler(AccountApplicationService service, AccountQuery accountQuery, @Qualifier("JsonDesScheduler") Scheduler scheduler) {
     this.service = service;
     this.accountQuery = accountQuery;
+    this.scheduler = scheduler;
   }
 
   public Mono<ServerResponse> getById(ServerRequest request) {
@@ -37,8 +42,7 @@ public class AccountHandler implements HttpHandler {
   }
 
   public Mono<ServerResponse> createAccount(ServerRequest request) {
-    return request
-        .bodyToMono(CreateAccountRequest.class)
+    return bodyToMono(request, CreateAccountRequest.class, scheduler)
         .map(CreateAccountRequest::payload)
         .flatMap(service::execute)
         .map(CreateAccountResponse::from)
@@ -46,8 +50,7 @@ public class AccountHandler implements HttpHandler {
   }
 
   public Mono<ServerResponse> depositMoney(ServerRequest request) {
-    return request
-        .bodyToMono(DepositMoneyRequest.class)
+    return bodyToMono(request, DepositMoneyRequest.class, scheduler)
         .map(DepositMoneyRequest::payload)
         .flatMap(service::execute)
         .map(DepositMoneyResponse::from)
@@ -55,8 +58,7 @@ public class AccountHandler implements HttpHandler {
   }
 
   public Mono<ServerResponse> withdrawMoney(ServerRequest request) {
-    return request
-        .bodyToMono(WithdrawMoneyRequest.class)
+    return bodyToMono(request, WithdrawMoneyRequest.class, scheduler)
         .map(WithdrawMoneyRequest::payload)
         .flatMap(service::execute)
         .map(WithdrawMoneyResponse::from)

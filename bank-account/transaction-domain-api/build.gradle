@@ -1,1 +1,5 @@
 description('domain api modele for transaction domain')
+
+dependencies {
+    api project(':common-api')
+}

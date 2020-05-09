@@ -1,5 +1,6 @@
 package com.mz.reactor.ddd.common.components.http;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -13,14 +14,16 @@ public interface HttpHandler {
 
   RouterFunction<ServerResponse> route();
 
+  ObjectMapper mapper();
+
   default <T> Mono<T> bodyToMono(ServerRequest request, Class<T> clazz, Scheduler scheduler) {
     return request.bodyToMono(String.class)
-        .flatMap(HttpHandlerFunctions.FN.deserializeJsonString(clazz, scheduler));
+        .flatMap(HttpHandlerFunctions.FN.deserializeJsonString(clazz, scheduler, mapper()));
   }
 
   default <T> Mono<T> bodyToMono(ServerRequest request, Class<T> clazz) {
     return request.bodyToMono(String.class)
-        .flatMap(HttpHandlerFunctions.FN.deserializeJsonString(clazz));
+        .flatMap(HttpHandlerFunctions.FN.deserializeJsonString(clazz, mapper()));
   }
 
   default <T> Mono<ServerResponse> mapToResponse(T result) {

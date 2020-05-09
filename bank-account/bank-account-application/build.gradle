@@ -1,1 +1,22 @@
+apply plugin: 'org.springframework.boot'
+
 description = 'back account application'
+
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation project(':common-api')
+    implementation project(':common-components')
+    implementation project(':common-persistence')
+    implementation project(':bank-account:account:account-impl')
+    implementation project(':bank-account:account:account-api')
+    implementation project(':bank-account:account:account-http-api')
+    implementation project(':bank-account:account:account-domain')
+    implementation project(':bank-account:account:account-adapters')
+    implementation project(':bank-account:transaction-impl')
+    implementation project(':bank-account:transaction-api')
+    implementation project(':bank-account:transaction-domain')
+    implementation project(':bank-account:transaction-adapters')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+}

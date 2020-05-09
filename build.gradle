@@ -53,175 +53,21 @@ subprojects {
     dependencies {
         implementation group: 'com.google.guava', name: 'guava', version: '28.1-jre'
         implementation 'io.projectreactor.tools:blockhound:1.0.0.RC1'
-        annotationProcessor 'org.immutables:value:2.7.5'
+        annotationProcessor "org.immutables:value:$immutablesVersion"
+        implementation "org.immutables:value:$immutablesVersion"
+        implementation "com.fasterxml.jackson.core:jackson-core"
+        implementation "com.fasterxml.jackson.core:jackson-databind"
+        implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+        implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+        implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
         testCompile group: 'org.assertj', name: 'assertj-core', version: '3.14.0'
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
     }
 
     test {
         useJUnitPlatform {
             includeEngines 'junit-jupiter'
         }
-    }
-}
-
-project(':common-api') {
-    dependencies {
-        api project(':shared-dependencies')
-    }
-}
-
-project(':bank-account:bank-account-application') {
-    apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'org.springframework.boot'
-
-    dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter-webflux'
-        implementation project(':common-api')
-        implementation project(':common-components')
-        implementation project(':common-persistence')
-        implementation project(':bank-account:account-impl')
-        implementation project(':bank-account:account-api')
-        implementation project(':bank-account:account-domain')
-        implementation project(':bank-account:account-adapters')
-        implementation project(':bank-account:transaction-impl')
-        implementation project(':bank-account:transaction-api')
-        implementation project(':bank-account:transaction-domain')
-        implementation project(':bank-account:transaction-adapters')
-        testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testImplementation 'io.projectreactor:reactor-test'
-    }
-}
-
-project(':bank-account:account-domain') {
-    dependencies {
-        api project(':common-api')
-        api project(':bank-account:account-domain-api')
-    }
-}
-
-project(':bank-account:account-domain-api') {
-    dependencies {
-        api project(':common-api')
-    }
-}
-
-project(':bank-account:account-api') {
-    dependencies {
-        api project(':common-api')
-        api project(':common-components')
-        api project(':shared-spring-dependencies')
-        api project(':bank-account:account-domain-api')
-    }
-}
-
-project(':bank-account:transaction-api') {
-    dependencies {
-        api project(':common-api')
-        api project(':common-components')
-        api project(':shared-spring-dependencies')
-        api project(':bank-account:transaction-domain-api')
-    }
-}
-
-project(':bank-account:account-impl') {
-    dependencies {
-        api project(':common-api')
-        api project(':common-components')
-        api project(':common-persistence')
-        api project(':shared-spring-dependencies')
-        api project(':shared-spring-dependencies')
-        api project(':bank-account:transaction-domain-api')
-        api project(':bank-account:account-domain-api')
-        api project(':bank-account:account-api')
-        api project(':bank-account:account-domain')
-    }
-}
-
-
-project(':bank-account:transaction-adapters') {
-    dependencies {
-        api project(':common-api')
-        api project(':bank-account:transaction-domain-api')
-        api project(':bank-account:transaction-api')
-        api project(':bank-account:account-domain-api')
-        api project(':shared-spring-dependencies')
-    }
-}
-
-project(':bank-account:transaction-impl') {
-    dependencies {
-        api project(':common-api')
-        api project(':common-components')
-        api project(':common-persistence')
-        api project(':shared-spring-dependencies')
-        api project(':bank-account:transaction-domain-api')
-        api project(':bank-account:account-domain-api')
-        api project(':bank-account:transaction-api')
-        api project(':bank-account:transaction-domain')
-    }
-}
-
-project(':bank-account:transaction-domain') {
-    dependencies {
-        api project(':common-api')
-        api project(':bank-account:transaction-domain-api')
-    }
-}
-
-project(':bank-account:account-adapters') {
-    dependencies {
-        api project(':common-api')
-        api project(':bank-account:transaction-domain-api')
-        api project(':bank-account:account-api')
-        api project(':bank-account:account-domain-api')
-        api project(':shared-spring-dependencies')
-    }
-}
-
-project(':bank-account:transaction-domain-api') {
-    dependencies {
-        api project(':common-api')
-    }
-}
-
-project(':shared-dependencies') {
-    dependencies {
-        api "org.immutables:value:$immutablesVersion"
-        api "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-        api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion"
-        api group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
-    }
-}
-
-project(':shared-spring-dependencies') {
-    apply plugin: 'io.spring.dependency-management'
-
-    dependencies {
-        api group: 'io.projectreactor', name: 'reactor-core'
-        api 'org.springframework:spring-context'
-        api 'org.springframework:spring-webflux'
-        api 'org.springframework:spring-core'
-    }
-}
-
-project(':common-persistence') {
-
-    dependencies {
-        api project(':common-api')
-//        implementation group: 'io.projectreactor', name: 'reactor-core'
-        api project(':shared-spring-dependencies')
-        testImplementation 'io.projectreactor:reactor-test'
-    }
-}
-
-project(':common-components') {
-    apply plugin: 'io.spring.dependency-management'
-
-    dependencies {
-        api project(':common-api')
-        api project(':shared-spring-dependencies')
-        testImplementation 'io.projectreactor:reactor-test'
     }
 }

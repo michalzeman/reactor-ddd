@@ -1,14 +1,18 @@
 package com.mz.reactor.ddd.reactorddd.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mz.reactor.ddd.common.components.http.HttpHandlerFunctions;
-import com.mz.reactor.ddd.reactorddd.account.api.AccountHandler;
+import com.mz.reactor.ddd.reactorddd.account.http.AccountHandler;
 import com.mz.reactor.ddd.reactorddd.transaction.api.TransactionHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -40,6 +44,14 @@ public class BankAccountAppConfiguration {
         .onError(Throwable.class,
             (throwable, serverRequest) -> HttpHandlerFunctions.FN.onError(throwable, serverRequest, error -> log.error("Error: ", error)))
         .build();
+  }
+
+  @Bean
+  @Primary
+  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+    ObjectMapper objectMapper = builder.build();
+    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    return objectMapper;
   }
 
 }

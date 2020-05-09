@@ -1,9 +1,9 @@
 package com.mz.reactor.ddd.reactorddd.application;
 
-import com.mz.reactor.ddd.reactorddd.account.api.model.CreateAccountRequest;
-import com.mz.reactor.ddd.reactorddd.account.api.model.CreateAccountResponse;
 import com.mz.reactor.ddd.reactorddd.account.domain.AccountState;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.CreateAccount;
+import com.mz.reactor.ddd.reactorddd.account.http.model.CreateAccountRequest;
+import com.mz.reactor.ddd.reactorddd.account.http.model.CreateAccountResponse;
 import com.mz.reactor.ddd.reactorddd.transaction.api.model.CreateTransactionRequest;
 import com.mz.reactor.ddd.reactorddd.transaction.api.model.CreateTransactionResponse;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.TransactionState;

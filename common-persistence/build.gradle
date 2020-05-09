@@ -1,0 +1,6 @@
+dependencies {
+    api project(':common-api')
+//        implementation group: 'io.projectreactor', name: 'reactor-core'
+    api project(':shared-spring-dependencies')
+    testImplementation 'io.projectreactor:reactor-test'
+}

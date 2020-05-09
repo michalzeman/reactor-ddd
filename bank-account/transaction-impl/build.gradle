@@ -1,1 +1,12 @@
 description('transaction-impl module')
+
+dependencies {
+    api project(':common-api')
+    api project(':common-components')
+    api project(':common-persistence')
+    api project(':shared-spring-dependencies')
+    api project(':bank-account:transaction-domain-api')
+    api project(':bank-account:account:account-domain-api')
+    api project(':bank-account:transaction-api')
+    api project(':bank-account:transaction-domain')
+}

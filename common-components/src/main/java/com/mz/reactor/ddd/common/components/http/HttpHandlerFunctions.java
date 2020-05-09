@@ -1,7 +1,6 @@
 package com.mz.reactor.ddd.common.components.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -19,20 +18,24 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 public enum HttpHandlerFunctions {
   FN;
 
-  public <T> Function<String, Mono<T>> deserializeJsonString(@Nonnull Class<T> clazz, @Nonnull Scheduler scheduler) {
-    return value -> Mono.fromCallable(() -> {
-      ObjectMapper mapper = new ObjectMapper();
-      mapper.registerModule(new Jdk8Module());
-      return mapper.readValue(value, clazz);
-    }).subscribeOn(scheduler);
+//  private final ObjectMapper mapper;
+//
+//  HttpHandlerFunctions() {
+//    mapper = new ObjectMapper();
+//    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+//    mapper.registerModule(new Jdk8Module());
+//  }
+
+  public <T> Function<String, Mono<T>> deserializeJsonString(
+      @Nonnull Class<T> clazz,
+      @Nonnull Scheduler scheduler,
+      @Nonnull ObjectMapper mapper
+  ) {
+    return value -> Mono.fromCallable(() -> mapper.readValue(value, clazz)).subscribeOn(scheduler);
   }
 
-  public <T> Function<String, Mono<T>> deserializeJsonString(@Nonnull Class<T> clazz) {
-    return value -> Mono.fromCallable(() -> {
-      ObjectMapper mapper = new ObjectMapper();
-      mapper.registerModule(new Jdk8Module());
-      return mapper.readValue(value, clazz);
-    }).subscribeOn(Schedulers.elastic());
+  public <T> Function<String, Mono<T>> deserializeJsonString(@Nonnull Class<T> clazz, @Nonnull ObjectMapper mapper) {
+    return value -> Mono.fromCallable(() -> mapper.readValue(value, clazz)).subscribeOn(Schedulers.elastic());
   }
 
   public <E extends Throwable> Mono<ServerResponse> onError(E e, ServerRequest req, Consumer<E> logger) {

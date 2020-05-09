@@ -1,0 +1,7 @@
+dependencies {
+    api project(':common-api')
+    api project(':common-components')
+    api project(':shared-spring-dependencies')
+    api project(':bank-account:account:account-domain-api')
+    implementation project(':bank-account:account:account-api')
+}

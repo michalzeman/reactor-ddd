@@ -1,5 +1,6 @@
 package com.mz.reactor.ddd.reactorddd.transaction.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mz.reactor.ddd.common.components.http.HttpHandler;
 import com.mz.reactor.ddd.reactorddd.transaction.api.model.CreateTransactionRequest;
 import com.mz.reactor.ddd.reactorddd.transaction.api.model.CreateTransactionResponse;
@@ -23,9 +24,12 @@ public class TransactionHandler implements HttpHandler {
 
   private final TransactionQuery query;
 
-  public TransactionHandler(TransactionApplicationService transactionApplicationService, TransactionQuery query) {
+  private final ObjectMapper mapper;
+
+  public TransactionHandler(TransactionApplicationService transactionApplicationService, TransactionQuery query, ObjectMapper mapper) {
     this.service = Objects.requireNonNull(transactionApplicationService);
     this.query = Objects.requireNonNull(query);
+    this.mapper = mapper;
   }
 
   public Mono<ServerResponse> getAll(ServerRequest request) {
@@ -57,5 +61,10 @@ public class TransactionHandler implements HttpHandler {
       return RouterFunctions.route()
           .nest(path("/transactions"), () -> route)
           .build();
+  }
+
+  @Override
+  public ObjectMapper mapper() {
+    return mapper;
   }
 }

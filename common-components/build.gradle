@@ -1,1 +1,11 @@
+apply plugin: 'io.spring.dependency-management'
+
 description('common compents such as message-buss component ...')
+
+
+dependencies {
+    api project(':common-api')
+    api project(':shared-spring-dependencies')
+    testImplementation 'io.projectreactor:reactor-test'
+    implementation "org.immutables:value:$immutablesVersion"
+}

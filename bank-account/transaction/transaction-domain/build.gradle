@@ -1,0 +1,6 @@
+description 'bank transation domain'
+
+dependencies {
+    api project(':common-api')
+    api project(':bank-account:transaction:transaction-domain-api')
+}

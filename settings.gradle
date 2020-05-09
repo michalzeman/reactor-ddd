@@ -1,27 +1,17 @@
-//pluginManagement {
-//    id 'io.spring.dependency-management' version "$springDependencyMavagementVersion"
-//    id 'java'
-//    id 'java-library'
-//}
-
-
 rootProject.name = 'reactor-ddd'
 include 'common-api'
 include 'shared-dependencies'
-include 'shared-spring-dependencies'
 include 'common-persistence'
 include 'common-components'
 include 'bank-account:bank-account-application'
 include 'bank-account:account:account-domain'
 include 'bank-account:account:account-domain-api'
 include 'bank-account:account:account-api'
+include 'bank-account:account:account-http-api'
 include 'bank-account:account:account-impl'
 include 'bank-account:account:account-adapters'
-include 'bank-account:transaction-domain'
-include 'bank-account:transaction-domain-api'
-include 'bank-account:transaction-impl'
-include 'bank-account:transaction-api'
-include 'bank-account:transaction-adapters'
-include 'bank-account:account:account-http-api'
-findProject(':bank-account:account:account-http-api')?.name = 'account-http-api'
-
+include 'bank-account:transaction:transaction-domain'
+include 'bank-account:transaction:transaction-domain-api'
+include 'bank-account:transaction:transaction-impl'
+include 'bank-account:transaction:transaction-api'
+include 'bank-account:transaction:transaction-adapters'

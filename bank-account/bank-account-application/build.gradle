@@ -13,10 +13,10 @@ dependencies {
     implementation project(':bank-account:account:account-http-api')
     implementation project(':bank-account:account:account-domain')
     implementation project(':bank-account:account:account-adapters')
-    implementation project(':bank-account:transaction-impl')
-    implementation project(':bank-account:transaction-api')
-    implementation project(':bank-account:transaction-domain')
-    implementation project(':bank-account:transaction-adapters')
+    implementation project(':bank-account:transaction:transaction-impl')
+    implementation project(':bank-account:transaction:transaction-api')
+    implementation project(':bank-account:transaction:transaction-domain')
+    implementation project(':bank-account:transaction:transaction-adapters')
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
 }

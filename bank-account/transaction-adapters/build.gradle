@@ -1,9 +1,0 @@
-description('transactions-adapters')
-
-dependencies {
-    api project(':common-api')
-    api project(':bank-account:transaction-domain-api')
-    api project(':bank-account:transaction-api')
-    api project(':bank-account:account:account-domain-api')
-    api project(':shared-spring-dependencies')
-}

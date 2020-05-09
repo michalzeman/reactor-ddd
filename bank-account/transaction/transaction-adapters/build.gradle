@@ -1,8 +1,8 @@
-description('account-adapter')
+description('transactions-adapters')
 
 dependencies {
     api project(':common-api')
     api project(':bank-account:transaction:transaction-domain-api')
-    api project(':bank-account:account:account-api')
+    api project(':bank-account:transaction:transaction-api')
     api project(':bank-account:account:account-domain-api')
 }

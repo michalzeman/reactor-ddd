@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 
 public class AggregateFacadeImpl<A, C extends Command, S> implements AggregateFacade<A, C, S> {

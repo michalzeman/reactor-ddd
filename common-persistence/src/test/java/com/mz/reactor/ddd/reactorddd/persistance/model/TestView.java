@@ -2,7 +2,6 @@ package com.mz.reactor.ddd.reactorddd.persistance.model;
 
 import com.mz.reactor.ddd.common.api.view.DomainView;
 
-import java.time.Instant;
 import java.util.Optional;
 
 public class TestView implements DomainView {

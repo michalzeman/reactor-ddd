@@ -4,8 +4,6 @@ import com.mz.reactor.ddd.common.api.command.Command;
 import com.mz.reactor.ddd.common.api.event.DomainEvent;
 import reactor.core.publisher.Mono;
 
-import java.util.stream.Stream;
-
 public interface AggregateFacade<A, C extends Command,S> {
 
   Mono<S> execute(C command, String aggregateID);

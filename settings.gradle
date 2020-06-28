@@ -1,7 +1,7 @@
 rootProject.name = 'reactor-ddd'
 include 'common-api'
 include 'shared-dependencies'
-include 'common-persistence'
+include 'common-persistence-api'
 include 'common-components'
 include 'bank-account:bank-account-application'
 include 'bank-account:account:account-domain'

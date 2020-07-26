@@ -1,32 +1,10 @@
-buildscript {
-
-    ext {
-        springBootVersion = '2.1.7.RELEASE'
-        springDependencyMavagementVersion = '1.0.8.RELEASE'
-        reactorVersion = '3.3.0.RELEASE'
-        immutablesVersion = '2.7.5'
-        jacksonVersion = '2.10.1'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
-    }
-}
-
 plugins {
-    id 'io.spring.dependency-management' version "$springDependencyMavagementVersion"
+    id 'org.springframework.boot' version "${springframeworkBootVersion}" apply false
+    id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
     id 'java'
-    id 'java-library'
 }
 
 allprojects {
-    apply plugin: 'java'
-    apply plugin: 'java-library'
-    apply plugin: 'io.spring.dependency-management'
 
     repositories {
         jcenter()
@@ -38,23 +16,29 @@ allprojects {
         maven { url 'https://repo.spring.io/snapshot' }
     }
 
-    dependencyManagement {
-        imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
-    }
-
 }
 
 subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
 
     group = 'com.mz.reactor.ddd'
     version = '0.0.1-SNAPSHOT'
     sourceCompatibility = '11'
 
+    dependencyManagement {
+        imports {
+            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        }
+    }
+
     dependencies {
         implementation group: 'com.google.guava', name: 'guava', version: '28.1-jre'
         implementation 'io.projectreactor.tools:blockhound:1.0.0.RC1'
-        annotationProcessor "org.immutables:value:$immutablesVersion"
-        implementation "org.immutables:value:$immutablesVersion"
+        annotationProcessor "org.immutables:value:${immutablesVersion}"
+        implementation "org.immutables:value:${immutablesVersion}"
         implementation "com.fasterxml.jackson.core:jackson-core"
         implementation "com.fasterxml.jackson.core:jackson-databind"
         implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"

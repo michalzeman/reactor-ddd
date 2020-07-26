@@ -2,7 +2,7 @@ package com.mz.reactor.ddd.reactorddd.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.mz.reactor.ddd.common.components.http.HttpHandlerFunctions;
+import com.mz.reactor.ddd.common.components.http.HttpHandlers;
 import com.mz.reactor.ddd.reactorddd.account.http.AccountHandler;
 import com.mz.reactor.ddd.reactorddd.transaction.api.TransactionHandler;
 import org.apache.commons.logging.Log;
@@ -42,7 +42,7 @@ public class BankAccountAppConfiguration {
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .body(Mono.just("Tick"), String.class))
         .onError(Throwable.class,
-            (throwable, serverRequest) -> HttpHandlerFunctions.FN.onError(throwable, serverRequest, error -> log.error("Error: ", error)))
+            (throwable, serverRequest) -> HttpHandlers.onError(throwable, serverRequest, error -> log.error("Error: ", error)))
         .build();
   }
 

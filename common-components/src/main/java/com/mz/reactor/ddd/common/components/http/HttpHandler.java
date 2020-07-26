@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import static com.mz.reactor.ddd.common.components.http.HttpHandlers.deserializeJsonString;
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 
 public interface HttpHandler {
@@ -18,12 +19,12 @@ public interface HttpHandler {
 
   default <T> Mono<T> bodyToMono(ServerRequest request, Class<T> clazz, Scheduler scheduler) {
     return request.bodyToMono(String.class)
-        .flatMap(HttpHandlerFunctions.FN.deserializeJsonString(clazz, scheduler, mapper()));
+        .flatMap(deserializeJsonString(clazz, scheduler, mapper()));
   }
 
   default <T> Mono<T> bodyToMono(ServerRequest request, Class<T> clazz) {
     return request.bodyToMono(String.class)
-        .flatMap(HttpHandlerFunctions.FN.deserializeJsonString(clazz, mapper()));
+        .flatMap(deserializeJsonString(clazz, mapper()));
   }
 
   default <T> Mono<ServerResponse> mapToResponse(T result) {

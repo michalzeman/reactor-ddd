@@ -15,9 +15,9 @@ import java.util.function.Function;
 
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 
-public enum HttpHandlerFunctions {
-  FN;
+public final class HttpHandlers {
 
+  private HttpHandlers() {}
 //  private final ObjectMapper mapper;
 //
 //  HttpHandlerFunctions() {
@@ -26,7 +26,7 @@ public enum HttpHandlerFunctions {
 //    mapper.registerModule(new Jdk8Module());
 //  }
 
-  public <T> Function<String, Mono<T>> deserializeJsonString(
+  public static <T> Function<String, Mono<T>> deserializeJsonString(
       @Nonnull Class<T> clazz,
       @Nonnull Scheduler scheduler,
       @Nonnull ObjectMapper mapper
@@ -34,11 +34,11 @@ public enum HttpHandlerFunctions {
     return value -> Mono.fromCallable(() -> mapper.readValue(value, clazz)).subscribeOn(scheduler);
   }
 
-  public <T> Function<String, Mono<T>> deserializeJsonString(@Nonnull Class<T> clazz, @Nonnull ObjectMapper mapper) {
+  public static <T> Function<String, Mono<T>> deserializeJsonString(@Nonnull Class<T> clazz, @Nonnull ObjectMapper mapper) {
     return value -> Mono.fromCallable(() -> mapper.readValue(value, clazz)).subscribeOn(Schedulers.elastic());
   }
 
-  public <E extends Throwable> Mono<ServerResponse> onError(E e, ServerRequest req, Consumer<E> logger) {
+  public static <E extends Throwable> Mono<ServerResponse> onError(E e, ServerRequest req, Consumer<E> logger) {
     return Mono.fromCallable(() -> {
       logger.accept(e);
       return ErrorMessage.builder().error(e.getMessage()).build();

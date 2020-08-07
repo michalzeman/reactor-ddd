@@ -2,3 +2,6 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
+
+test:
+  composit-value: test.${TEST_VALUE:NOOO}-zemo

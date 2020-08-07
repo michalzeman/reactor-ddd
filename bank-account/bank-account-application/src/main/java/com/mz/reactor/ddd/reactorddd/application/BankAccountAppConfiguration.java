@@ -7,6 +7,7 @@ import com.mz.reactor.ddd.reactorddd.account.http.AccountHandler;
 import com.mz.reactor.ddd.reactorddd.transaction.api.TransactionHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +49,8 @@ public class BankAccountAppConfiguration {
 
   @Bean
   @Primary
-  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder, @Value("${test.composit-value}") String test) {
+    log.info(String.format("ZEMO!!!!! -> %s", test));
     ObjectMapper objectMapper = builder.build();
     objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     return objectMapper;

@@ -48,7 +48,7 @@ public class AccountHandler implements HttpHandler {
 
   public Mono<ServerResponse> getAll(ServerRequest request) {
     return ServerResponse.ok()
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(accountQuery.getAll(), AccountState.class);
   }
 
@@ -78,11 +78,11 @@ public class AccountHandler implements HttpHandler {
 
   public RouterFunction<ServerResponse> route() {
     var route = RouterFunctions
-        .route(POST("").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::createAccount)
-        .andRoute(GET("/").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::getAll)
-        .andRoute(GET("/{id}").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::getById)
-        .andRoute(PUT("/moneys/withdraw").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::withdrawMoney)
-        .andRoute(PUT("/moneys/deposit").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::depositMoney);
+        .route(POST("").and(accept(MediaType.APPLICATION_JSON)), this::createAccount)
+        .andRoute(GET("/").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
+        .andRoute(GET("/{id}").and(accept(MediaType.APPLICATION_JSON)), this::getById)
+        .andRoute(PUT("/moneys/withdraw").and(accept(MediaType.APPLICATION_JSON)), this::withdrawMoney)
+        .andRoute(PUT("/moneys/deposit").and(accept(MediaType.APPLICATION_JSON)), this::depositMoney);
 
     return RouterFunctions.route()
         .nest(path("/accounts"), () -> route)

@@ -7,10 +7,7 @@ import com.mz.reactor.ddd.reactorddd.account.domain.command.DepositMoney;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.DepositTransferMoney;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawMoney;
 import com.mz.reactor.ddd.reactorddd.account.domain.command.WithdrawTransferMoney;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.MoneyDeposited;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.TransferMoneyAccountNotFound;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.TransferMoneyDeposited;
-import com.mz.reactor.ddd.reactorddd.account.domain.event.TransferMoneyWithdrawn;
+import com.mz.reactor.ddd.reactorddd.account.domain.event.*;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionCreated;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionDepositRolledBack;
 import com.mz.reactor.ddd.reactorddd.transaction.domain.event.TransactionWithdrawRolledBack;
@@ -32,7 +29,11 @@ public class TransactionChangeStreamAdapter {
 
   private final AccountQuery accountQuery;
 
-  public TransactionChangeStreamAdapter(ApplicationMessageBus messageBus, AccountApplicationService accountService, AccountQuery accountQuery) {
+  public TransactionChangeStreamAdapter(
+      ApplicationMessageBus messageBus,
+      AccountApplicationService accountService,
+      AccountQuery accountQuery
+  ) {
     this.messageBus = Objects.requireNonNull(messageBus);
     this.accountService = Objects.requireNonNull(accountService);
     this.accountQuery = Objects.requireNonNull(accountQuery);
@@ -100,7 +101,7 @@ public class TransactionChangeStreamAdapter {
             .amount(e.amount())
             .aggregateId(e.toAccountId())
             .correlationId(e.correlationId())
-            .build(), MoneyDeposited.class))
+            .build(), MoneyWithdrawn.class))
         .log()
         .retry()
         .subscribe();

@@ -11,6 +11,7 @@ import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateFacade;
 import com.mz.reactor.ddd.reactorddd.persistance.aggregate.AggregateRepository;
 import com.mz.reactor.ddd.reactorddd.persistance.aggregate.impl.AggregateFacadeImpl;
 import com.mz.reactor.ddd.reactorddd.persistance.aggregate.impl.AggregateRepositoryImpl;
+import com.mz.reactor.ddd.reactorddd.persistance.query.Query;
 import com.mz.reactor.ddd.reactorddd.persistance.view.impl.ViewRepository;
 import com.mz.reactor.ddd.reactorddd.persistance.view.impl.impl.ViewRepositoryImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,11 +26,25 @@ public class AccountConfiguration {
   public static final String ACCOUNT_AGGREGATE_REPOSITORY = "accountAggregateRepository";
   public static final String ACCOUNT_AGGREGATE_FACADE = "accountAggregateFacade";
   public static final String ACCOUNT_VIEW_REPOSITORY = "accountViewRepository";
+  public static final String ACCOUNT_QUERY_SERVICE = "accountQueryService";
 
   private final AccountEventHandler accountEventApplier = new AccountEventHandler();
   private final AccountCommandHandler accountCommandHandler = new AccountCommandHandler();
   private final Function<Id, AccountAggregate> aggregateFactory = id -> new AccountAggregate(id.getValue());
   private final Function<AccountAggregate, AccountState> stateFactory = AccountAggregate::getState;
+
+  @Bean(ACCOUNT_QUERY_SERVICE)
+  public Query<AccountState> accountQueryService(
+      @Qualifier(ACCOUNT_VIEW_REPOSITORY) ViewRepository<AccountState> viewRepository,
+      ApplicationMessageBus bus
+  ) {
+    return Query.of(
+        viewRepository,
+        () -> bus.messagesStream()
+            .filter(m -> m instanceof AccountState)
+            .cast(AccountState.class)
+    );
+  }
 
   @Bean(ACCOUNT_AGGREGATE_REPOSITORY)
   public AggregateRepository<AccountAggregate, AccountCommand, AccountState> getAggregateRepository() {

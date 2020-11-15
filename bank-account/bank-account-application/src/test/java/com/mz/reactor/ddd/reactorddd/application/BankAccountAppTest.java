@@ -61,21 +61,21 @@ public class BankAccountAppTest {
             .build())
         .build();
     return webTestClient.post().uri("/accounts")
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromObject(createAccount1))
         .exchange()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(CreateAccountResponse.class)
         .returnResult().getResponseBody();
   }
 
   private List<AccountState> getAllAccounts() {
     return webTestClient.get().uri("/accounts")
-        .accept(MediaType.APPLICATION_JSON_UTF8)
+        .accept(MediaType.APPLICATION_JSON)
         .exchange()
         .expectStatus()
         .isOk()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(List.class).returnResult().getResponseBody();
   }
 
@@ -90,39 +90,39 @@ public class BankAccountAppTest {
         .build();
 
     return webTestClient.post().uri("/transactions")
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(BodyInserters.fromObject(createTransactionRequest))
         .exchange()
         .expectStatus().isOk()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(CreateTransactionResponse.class).returnResult().getResponseBody();
   }
 
   private AccountState getAccount(String id) {
     return webTestClient.get().uri("/accounts/{id}", id)
-        .accept(MediaType.APPLICATION_JSON_UTF8)
+        .accept(MediaType.APPLICATION_JSON)
         .exchange()
         .expectStatus().isOk()
-//        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+//        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(AccountState.class).returnResult().getResponseBody();
   }
 
   private String getAccountString(String id) {
     return webTestClient.get().uri("/accounts/{id}", id)
-        .accept(MediaType.APPLICATION_JSON_UTF8)
+        .accept(MediaType.APPLICATION_JSON)
         .exchange()
         .expectStatus().isOk()
-//        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+//        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(String.class).returnResult().getResponseBody();
   }
 
   private TransactionState getTransaction(String id) {
     return webTestClient.get().uri("/transactions/{id}", id)
-        .accept(MediaType.APPLICATION_JSON_UTF8)
+        .accept(MediaType.APPLICATION_JSON)
         .exchange()
         .expectStatus()
         .isOk()
-        .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(TransactionState.class).returnResult().getResponseBody();
   }
 }

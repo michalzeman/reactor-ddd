@@ -44,7 +44,7 @@ public class AggregateFacadeImpl<A, C extends Command, S> implements AggregateFa
   public Mono<? extends DomainEvent> executeReturnEvent(C command, String aggregateID, Class<? extends DomainEvent> eventType) {
     var result = aggregateRepository.execute(command, new Id(aggregateID));
     return result.flatMap(cr -> processResult(aggregateID, eventType, cr))
-        .doOnError(error -> log.error("execute -> event type: "+eventType, error));
+        .doOnError(error -> log.error("execute -> event type: " + eventType, error));
   }
 
   @Override

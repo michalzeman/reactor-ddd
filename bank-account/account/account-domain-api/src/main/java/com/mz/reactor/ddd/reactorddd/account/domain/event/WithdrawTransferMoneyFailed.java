@@ -8,7 +8,9 @@ import org.immutables.value.Value;
 @JsonSerialize(as = ImmutableWithdrawTransferMoneyFailed.class)
 @JsonDeserialize(as = ImmutableWithdrawTransferMoneyFailed.class)
 public interface WithdrawTransferMoneyFailed extends TransferMoneyFailed {
+
   static ImmutableWithdrawTransferMoneyFailed.Builder builder() {
     return ImmutableWithdrawTransferMoneyFailed.builder();
   }
+  
 }

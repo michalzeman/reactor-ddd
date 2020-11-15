@@ -26,7 +26,11 @@ public class TransactionHandler implements HttpHandler {
 
   private final ObjectMapper mapper;
 
-  public TransactionHandler(TransactionApplicationService transactionApplicationService, TransactionQuery query, ObjectMapper mapper) {
+  public TransactionHandler(
+      TransactionApplicationService transactionApplicationService,
+      TransactionQuery query,
+      ObjectMapper mapper
+  ) {
     this.service = Objects.requireNonNull(transactionApplicationService);
     this.query = Objects.requireNonNull(query);
     this.mapper = mapper;
@@ -34,7 +38,7 @@ public class TransactionHandler implements HttpHandler {
 
   public Mono<ServerResponse> getAll(ServerRequest request) {
     return ServerResponse.ok()
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .contentType(MediaType.APPLICATION_JSON)
         .body(query.getAll(), TransactionState.class);
   }
 
@@ -54,9 +58,9 @@ public class TransactionHandler implements HttpHandler {
   @Override
   public RouterFunction<ServerResponse> route() {
       var route = RouterFunctions
-          .route(POST("").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::createTransaction)
-      .andRoute(GET("/").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::getAll)
-      .andRoute(GET("/{id}").and(accept(MediaType.APPLICATION_JSON_UTF8)), this::getById);
+          .route(POST("").and(accept(MediaType.APPLICATION_JSON)), this::createTransaction)
+      .andRoute(GET("/").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
+      .andRoute(GET("/{id}").and(accept(MediaType.APPLICATION_JSON)), this::getById);
 
       return RouterFunctions.route()
           .nest(path("/transactions"), () -> route)

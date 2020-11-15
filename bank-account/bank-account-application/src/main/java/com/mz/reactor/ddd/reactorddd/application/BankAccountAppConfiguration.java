@@ -40,7 +40,7 @@ public class BankAccountAppConfiguration {
         .add(accountHandler.route())
         .add(transactionHandler.route())
         .GET("/health", req -> ServerResponse.ok()
-            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .contentType(MediaType.APPLICATION_JSON)
             .body(Mono.just("Tick"), String.class))
         .onError(Throwable.class,
             (throwable, serverRequest) -> HttpHandlers.onError(throwable, serverRequest, error -> log.error("Error: ", error)))

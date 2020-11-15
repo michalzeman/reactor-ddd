@@ -59,7 +59,7 @@ public class AccountChangeStreamAdapter {
   }
 
   private void handleTransferMoneyWithdrawn(ApplicationMessageBus bus) {
-    log.debug("handleTransferMoneyDeposited ->");
+    log.debug("handleTransferMoneyWithdrawn ->");
     bus.messagesStream()
         .filter(m -> m instanceof TransferMoneyWithdrawn)
         .cast(TransferMoneyWithdrawn.class)

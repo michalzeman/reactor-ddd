@@ -16,7 +16,7 @@ This demo is implemented using Spring reactor project.
 * `Account`
 * `Transaction`
 
-Those two aggregates representing one bounded context `Bank account`.
+Those two aggregate roots representing two bounded contexts `Account bounded context` and `Transaction bounded context`.
 
 ## Supported operation by Account aggregate
 `account-domain-api` module contains definition of contract provided by `Account` aggregate.
@@ -24,14 +24,14 @@ Here is the list of basic operations:
 * create account                        
 * deposit money                         
 * withdraw money                        
-* transfer money between two accounts 
  
 ## Supported operation by Transaction aggregate
 `transaction-domain-api` module contains definition of contract provided by `Transaction` aggregate
 Here is the list of basic operations:
 * create transaction
 * cancel/rollback transaction
-* finish transaction 
+* finish transaction
+* transfer money between two accounts 
 
 ## Persistence
 Implementation is following CQRS and event sourcing design pattern. Persistence API is provided by

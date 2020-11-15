@@ -13,18 +13,11 @@ import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static org.springframework.web.reactive.function.BodyInserters.fromObject;
+import static org.springframework.web.reactive.function.BodyInserters.fromValue;
 
 public final class HttpHandlers {
 
   private HttpHandlers() {}
-//  private final ObjectMapper mapper;
-//
-//  HttpHandlerFunctions() {
-//    mapper = new ObjectMapper();
-//    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-//    mapper.registerModule(new Jdk8Module());
-//  }
 
   public static <T> Function<String, Mono<T>> deserializeJsonString(
       @Nonnull Class<T> clazz,
@@ -43,7 +36,7 @@ public final class HttpHandlers {
       logger.accept(e);
       return ErrorMessage.builder().error(e.getMessage()).build();
     }).flatMap(error -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
-        .body(fromObject(error)));
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(fromValue(error)));
   }
 }

@@ -31,6 +31,7 @@ public class AccountApplicationServiceImpl implements AccountApplicationService 
     this.aggregateFacade = aggregateFacade;
   }
 
+  @Override
   public <R extends DomainEvent> Mono<R> execute(AccountCommand cmd, Class<R> eventType) {
     return this.aggregateFacade.executeReturnEvent(cmd, cmd.aggregateId(), eventType)
         .cast(eventType);

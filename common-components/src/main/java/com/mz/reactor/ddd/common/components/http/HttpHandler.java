@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import static com.mz.reactor.ddd.common.components.http.HttpHandlers.deserializeJsonString;
-import static org.springframework.web.reactive.function.BodyInserters.fromObject;
+import static org.springframework.web.reactive.function.BodyInserters.fromValue;
 
 public interface HttpHandler {
 
@@ -29,8 +29,8 @@ public interface HttpHandler {
 
   default <T> Mono<ServerResponse> mapToResponse(T result) {
     return ServerResponse.ok()
-        .contentType(MediaType.APPLICATION_JSON_UTF8)
-        .body(fromObject(result));
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(fromValue(result));
   }
 
 }

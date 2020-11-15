@@ -11,13 +11,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AccountAggregate {
-  private Id aggregateId;
+  private final Id aggregateId;
 
   private Money amount;
 
   private Set<Id> openedTransactions = new HashSet<>();
 
-  private Set<Id> finishedTransactions = new HashSet<>();
+  private final Set<Id> finishedTransactions = new HashSet<>();
 
   public AccountAggregate(String aggregateId) {
     this.aggregateId = new Id(aggregateId);

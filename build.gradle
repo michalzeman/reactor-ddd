@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
     id 'org.springframework.boot' version "${springframeworkBootVersion}" apply false
     id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
@@ -7,13 +9,10 @@ plugins {
 allprojects {
 
     repositories {
-        jcenter()
         mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
-        maven { url 'https://repo.spring.io/milestone' }
-        maven { url 'https://repo.spring.io/snapshot' }
     }
 
 }
@@ -26,17 +25,18 @@ subprojects {
 
     group = 'com.mz.reactor.ddd'
     version = '0.0.1-SNAPSHOT'
-    sourceCompatibility = '11'
+    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_11
 
     dependencyManagement {
         imports {
-            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+            mavenBom SpringBootPlugin.BOM_COORDINATES
         }
     }
 
     dependencies {
         implementation group: 'com.google.guava', name: 'guava', version: '28.1-jre'
-        implementation 'io.projectreactor.tools:blockhound:1.0.0.RC1'
+        implementation 'io.projectreactor.tools:blockhound:1.0.4.RELEASE'
         annotationProcessor "org.immutables:value:${immutablesVersion}"
         implementation "org.immutables:value:${immutablesVersion}"
         implementation "com.fasterxml.jackson.core:jackson-core"

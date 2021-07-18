@@ -1,5 +1,5 @@
-description('domain api modele for transaction domain')
+description('domain implementation modele for transaction domain')
 
 dependencies {
-    api project(':common-api')
+    implementation project(':common-api')
 }

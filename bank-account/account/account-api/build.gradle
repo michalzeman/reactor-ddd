@@ -1,7 +1,7 @@
 description('account api module')
 
 dependencies {
-    api project(':common-api')
-    api project(':common-components')
-    api project(':bank-account:account:account-domain-api')
+    implementation project(':common-api')
+    implementation project(':common-components')
+    implementation project(':bank-account:account:account-domain-api')
 }

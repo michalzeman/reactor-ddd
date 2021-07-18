@@ -1,11 +1,11 @@
 description('account implementation of infrastructure layer')
 
 dependencies {
-    api project(':common-api')
-    api project(':common-components')
-    api project(':common-persistence-api')
-    api project(':bank-account:transaction:transaction-domain-api')
-    api project(':bank-account:account:account-domain-api')
-    api project(':bank-account:account:account-api')
-    api project(':bank-account:account:account-domain')
+    implementation project(':common-api')
+    implementation project(':common-components')
+    implementation project(':common-persistence-api')
+    implementation project(':bank-account:transaction:transaction-domain-api')
+    implementation project(':bank-account:account:account-domain-api')
+    implementation project(':bank-account:account:account-api')
+    implementation project(':bank-account:account:account-domain')
 }

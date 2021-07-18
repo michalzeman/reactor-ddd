@@ -1,6 +1,6 @@
 description 'domain implementation of banck account'
 
 dependencies {
-    api project(':common-api')
-    api project(':bank-account:account:account-domain-api')
+    implementation project(':common-api')
+    implementation project(':bank-account:account:account-domain-api')
 }

@@ -1,8 +1,9 @@
 description('transactions-adapters')
 
 dependencies {
-    api project(':common-api')
-    api project(':bank-account:transaction:transaction-domain-api')
-    api project(':bank-account:transaction:transaction-api')
-    api project(':bank-account:account:account-domain-api')
+    implementation project(':common-api')
+    implementation project(':common-components')
+    implementation project(':bank-account:transaction:transaction-domain-api')
+    implementation project(':bank-account:transaction:transaction-api')
+    implementation project(':bank-account:account:account-domain-api')
 }

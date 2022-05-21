@@ -41,7 +41,11 @@ public class AggregateFacadeImpl<A, C extends Command, S> implements AggregateFa
   }
 
   @Override
-  public Mono<? extends DomainEvent> executeReturnEvent(C command, String aggregateID, Class<? extends DomainEvent> eventType) {
+  public Mono<? extends DomainEvent> executeReturnEvent(
+      C command,
+      String aggregateID,
+      Class<? extends DomainEvent> eventType
+  ) {
     var result = aggregateRepository.execute(command, new Id(aggregateID));
     return result.flatMap(cr -> processResult(aggregateID, eventType, cr))
         .doOnError(error -> log.error("execute -> event type: " + eventType, error));
@@ -58,32 +62,24 @@ public class AggregateFacadeImpl<A, C extends Command, S> implements AggregateFa
   }
 
   private Mono<? extends DomainEvent> processResult(String aggregateId, Class<? extends DomainEvent> eventType, CommandResult result) {
-    switch (result.statusCode()) {
-      case OK:
-        return publishChanges(aggregateId, result)
-            .map(state -> result.events().stream()
-                .filter(e -> isInstance(e, eventType))
-                .map(eventType::cast)
-                .findAny())
-            .map(Optional::get);
-      case FAILED:
-        return onFailed(result);
-      case NOT_MODIFIED:
-      default:
-        return Mono.empty();
-    }
+    return switch (result.statusCode()) {
+      case OK -> publishChanges(aggregateId, result)
+          .map(state -> result.events().stream()
+              .filter(e -> isInstance(e, eventType))
+              .map(eventType::cast)
+              .findAny())
+          .map(Optional::get);
+      case FAILED -> onFailed(result);
+      default -> Mono.empty();
+    };
   }
 
   private Mono<S> processResult(String aggregateId, CommandResult result) {
-    switch (result.statusCode()) {
-      case OK:
-        return publishChanges(aggregateId, result);
-      case FAILED:
-        return onFailed(result);
-      case NOT_MODIFIED:
-      default:
-        return Mono.empty();
-    }
+    return switch (result.statusCode()) {
+      case OK -> publishChanges(aggregateId, result);
+      case FAILED -> onFailed(result);
+      default -> Mono.empty();
+    };
   }
 
   private <T> Mono<T> onFailed(CommandResult result) {

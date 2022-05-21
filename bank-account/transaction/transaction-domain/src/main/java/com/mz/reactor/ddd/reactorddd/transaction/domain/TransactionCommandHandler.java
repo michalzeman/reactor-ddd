@@ -20,16 +20,16 @@ public class TransactionCommandHandler implements CommandHandler<TransactionAggr
 
   @Override
   public CommandResult execute(TransactionAggregate aggregate, TransactionCommand command) {
-    if (command instanceof CreateTransaction) {
-      return doCreateTransaction(aggregate, (CreateTransaction) command);
-    } else if (command instanceof FinishTransaction) {
-      return doFinishTransaction(aggregate, (FinishTransaction) command);
-    } else if (command instanceof CancelTransaction) {
-      return doCancelTransaction(aggregate, (CancelTransaction) command);
-    } else if (command instanceof ValidateTransactionMoneyWithdraw) {
-      return doValidateTransactionMoneyWithdraw(aggregate, (ValidateTransactionMoneyWithdraw) command);
-    } else if (command instanceof ValidateTransactionMoneyDeposit) {
-      return doValidateTransactionMoneyDeposit(aggregate, (ValidateTransactionMoneyDeposit) command);
+    if (command instanceof CreateTransaction createTransaction) {
+      return doCreateTransaction(aggregate, createTransaction);
+    } else if (command instanceof FinishTransaction finishTransaction) {
+      return doFinishTransaction(aggregate, finishTransaction);
+    } else if (command instanceof CancelTransaction cancelTransaction) {
+      return doCancelTransaction(aggregate, cancelTransaction);
+    } else if (command instanceof ValidateTransactionMoneyWithdraw validateTransactionMoneyWithdraw) {
+      return doValidateTransactionMoneyWithdraw(aggregate, validateTransactionMoneyWithdraw);
+    } else if (command instanceof ValidateTransactionMoneyDeposit validateTransactionMoneyDeposit) {
+      return doValidateTransactionMoneyDeposit(aggregate, validateTransactionMoneyDeposit);
     } else {
       return CommandResult.badCommand(command);
     }
@@ -59,14 +59,7 @@ public class TransactionCommandHandler implements CommandHandler<TransactionAggr
 
   private CommandResult doCancelTransaction(TransactionAggregate aggregate, CancelTransaction command) {
     try {
-      return Optional.of(command)
-          .map(aggregate::validateCancelTransaction)
-          .map(e -> CommandResult.builder()
-              .commandId(command.commandId())
-              .events(e)
-              .statusCode(CommandResult.StatusCode.OK)
-              .build())
-          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
+      return CommandResult.from(aggregate.validateCancelTransaction(command), command);
     } catch (RuntimeException e) {
       return CommandResult.builder()
           .commandId(Optional.ofNullable(command)
@@ -87,14 +80,7 @@ public class TransactionCommandHandler implements CommandHandler<TransactionAggr
 
   private CommandResult doCreateTransaction(TransactionAggregate aggregate, CreateTransaction command) {
     try {
-      return Optional.of(command)
-          .map(aggregate::validateCreateTransaction)
-          .map(e -> CommandResult.builder()
-              .commandId(command.commandId())
-              .events(List.of(e))
-              .statusCode(CommandResult.StatusCode.OK)
-              .build())
-          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
+      return CommandResult.from(List.of(aggregate.validateCreateTransaction(command)), command);
     } catch (RuntimeException e) {
       return CommandResult.builder()
           .commandId(Optional.ofNullable(command)
@@ -109,16 +95,7 @@ public class TransactionCommandHandler implements CommandHandler<TransactionAggr
 
   private CommandResult doFinishTransaction(TransactionAggregate aggregate, FinishTransaction command) {
     try {
-      return Optional.of(command)
-          .map(aggregate::validateFinishTransaction)
-          .map(e -> CommandResult.builder()
-              .commandId(Optional.ofNullable(command)
-                  .map(Command::commandId)
-                  .orElseGet(() -> UUID.randomUUID().toString()))
-              .events(List.of(e))
-              .statusCode(CommandResult.StatusCode.OK)
-              .build())
-          .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified(command));
+      return CommandResult.from(List.of(aggregate.validateFinishTransaction(command)), command);
     } catch (RuntimeException e) {
       return CommandResult.builder()
           .commandId(Optional.ofNullable(command)

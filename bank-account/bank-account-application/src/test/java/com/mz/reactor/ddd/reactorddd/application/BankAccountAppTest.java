@@ -44,7 +44,7 @@ public class BankAccountAppTest {
 
     var transactionId = createTransaction(accountId1, accountId2, correlationId, BigDecimal.TEN).payload().aggregateId();
 
-    Thread.sleep(2000l);
+    Thread.sleep(2000L);
 
     assertThat(getTransaction(transactionId).status()).isEqualByComparingTo(TransactionStatus.FINISHED);
 
@@ -62,7 +62,7 @@ public class BankAccountAppTest {
         .build();
     return webTestClient.post().uri("/accounts")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(createAccount1))
+        .body(BodyInserters.fromValue(createAccount1))
         .exchange()
         .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(CreateAccountResponse.class)
@@ -76,7 +76,7 @@ public class BankAccountAppTest {
         .expectStatus()
         .isOk()
         .expectHeader().contentType(MediaType.APPLICATION_JSON)
-        .expectBody(List.class).returnResult().getResponseBody();
+        .expectBodyList(AccountState.class).returnResult().getResponseBody();
   }
 
   private CreateTransactionResponse createTransaction(String fromAccount, String toAccount, String correlationId, BigDecimal amount) {
@@ -91,7 +91,7 @@ public class BankAccountAppTest {
 
     return webTestClient.post().uri("/transactions")
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromObject(createTransactionRequest))
+        .body(BodyInserters.fromValue(createTransactionRequest))
         .exchange()
         .expectStatus().isOk()
         .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -103,17 +103,7 @@ public class BankAccountAppTest {
         .accept(MediaType.APPLICATION_JSON)
         .exchange()
         .expectStatus().isOk()
-//        .expectHeader().contentType(MediaType.APPLICATION_JSON)
         .expectBody(AccountState.class).returnResult().getResponseBody();
-  }
-
-  private String getAccountString(String id) {
-    return webTestClient.get().uri("/accounts/{id}", id)
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().isOk()
-//        .expectHeader().contentType(MediaType.APPLICATION_JSON)
-        .expectBody(String.class).returnResult().getResponseBody();
   }
 
   private TransactionState getTransaction(String id) {

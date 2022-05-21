@@ -6,6 +6,17 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            library('guava','com.google.guava:guava:28.1-jre')
+            library('projectreactor-blockhound', 'io.projectreactor.tools:blockhound:1.0.4.RELEASE')
+            library('apache-commons-lang3', 'org.apache.commons:commons-lang3:3.9')
+            library('assertj-core', 'org.assertj:assertj-core:3.14.0')
+        }
+    }
+}
+
 rootProject.name = 'reactor-ddd'
 include 'common-api'
 include 'shared-dependencies'

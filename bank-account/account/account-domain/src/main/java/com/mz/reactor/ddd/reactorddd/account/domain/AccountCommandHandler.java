@@ -13,18 +13,18 @@ public class AccountCommandHandler implements CommandHandler<AccountAggregate, A
 
   @Override
   public CommandResult execute(AccountAggregate aggregate, AccountCommand command) {
-    if (command instanceof WithdrawMoney) {
-      return doWithdrawMoney(aggregate, (WithdrawMoney) command);
-    } else if (command instanceof CreateAccount) {
-      return doCreateAccount(aggregate, (CreateAccount) command);
-    } else if (command instanceof DepositMoney) {
-      return doDepositMoney(aggregate, (DepositMoney) command);
-    } else if (command instanceof WithdrawTransferMoney) {
-      return doWithdrawTransferMoney(aggregate, (WithdrawTransferMoney) command);
-    } else if (command instanceof DepositTransferMoney) {
-      return doDepositTransferMoney(aggregate, (DepositTransferMoney) command);
-    } else if (command instanceof FinishOpenedTransaction) {
-      return doFinishOpenedTransaction(aggregate, (FinishOpenedTransaction) command);
+    if (command instanceof WithdrawMoney withdrawMoney) {
+      return doWithdrawMoney(aggregate, withdrawMoney);
+    } else if (command instanceof CreateAccount createAccount) {
+      return doCreateAccount(aggregate, createAccount);
+    } else if (command instanceof DepositMoney depositMoney) {
+      return doDepositMoney(aggregate, depositMoney);
+    } else if (command instanceof WithdrawTransferMoney withdrawTransferMoney) {
+      return doWithdrawTransferMoney(aggregate, withdrawTransferMoney);
+    } else if (command instanceof DepositTransferMoney depositTransferMoney) {
+      return doDepositTransferMoney(aggregate, depositTransferMoney);
+    } else if (command instanceof FinishOpenedTransaction finishOpenedTransaction) {
+      return doFinishOpenedTransaction(aggregate, finishOpenedTransaction);
     } else {
       return CommandResult.badCommand(command);
     }

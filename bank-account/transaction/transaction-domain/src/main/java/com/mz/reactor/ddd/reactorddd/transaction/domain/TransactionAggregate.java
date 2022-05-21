@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class TransactionAggregate {
 
-  private Id aggregateId;
+  private final Id aggregateId;
 
   private Id fromAccount;
 
@@ -35,16 +35,16 @@ public class TransactionAggregate {
   public List<TransactionEvent> validateTransactionMoneyDeposit(ValidateTransactionMoneyDeposit cmd) {
     if (this.status == TransactionStatus.FAILED) {
       return List.of(TransactionDepositRolledBack.builder()
-          .aggregateId(this.aggregateId.getValue())
+          .aggregateId(this.aggregateId.value())
           .amount(this.amount)
           .correlationId(cmd.correlationId())
-          .toAccountId(this.toAccount.getValue())
-          .fromAccountId(this.fromAccount.getValue())
+          .toAccountId(this.toAccount.value())
+          .fromAccountId(this.fromAccount.value())
           .build());
     } else {
       return handleFinishWhenMoneyDeposited(cmd.correlationId().orElseGet(() -> UUID.randomUUID().toString()))
           .apply(List.of(TransactionMoneyDeposited.builder()
-              .aggregateId(this.aggregateId.getValue())
+              .aggregateId(this.aggregateId.value())
               .correlationId(cmd.correlationId())
               .build()));
     }
@@ -53,16 +53,16 @@ public class TransactionAggregate {
   public List<TransactionEvent> validateTransactionMoneyWithdraw(ValidateTransactionMoneyWithdraw cmd) {
     if (this.status == TransactionStatus.FAILED) {
       return List.of(TransactionWithdrawRolledBack.builder()
-          .aggregateId(this.aggregateId.getValue())
+          .aggregateId(this.aggregateId.value())
           .amount(this.amount)
           .correlationId(cmd.correlationId())
-          .toAccountId(this.toAccount.getValue())
-          .fromAccountId(this.fromAccount.getValue())
+          .toAccountId(this.toAccount.value())
+          .fromAccountId(this.fromAccount.value())
           .build());
     } else {
       return handleFinishWhenMoneyWithdrawn(cmd.correlationId().orElseGet(() -> UUID.randomUUID().toString()))
           .apply(List.of(TransactionMoneyWithdrawn.builder()
-              .aggregateId(this.aggregateId.getValue())
+              .aggregateId(this.aggregateId.value())
               .correlationId(cmd.correlationId())
               .build()));
     }
@@ -76,7 +76,7 @@ public class TransactionAggregate {
       }
 
       return TransactionCreated.builder()
-          .aggregateId(this.aggregateId.getValue())
+          .aggregateId(this.aggregateId.value())
           .correlationId(command.correlationId())
           .amount(command.amount())
           .fromAccountId(command.fromAccountId())
@@ -91,10 +91,10 @@ public class TransactionAggregate {
   public TransactionFinished validateFinishTransaction(FinishTransaction command) {
     if (status == TransactionStatus.CREATED) {
       return TransactionFinished.builder()
-          .aggregateId(aggregateId.getValue())
+          .aggregateId(aggregateId.value())
           .correlationId(command.correlationId())
-          .fromAccountId(fromAccount.getValue())
-          .toAccountId(toAccount.getValue())
+          .fromAccountId(fromAccount.value())
+          .toAccountId(toAccount.value())
           .build();
     } else {
       throw new RuntimeException(String.format("Transaction in the state: %s can't be finished!", status));
@@ -107,10 +107,10 @@ public class TransactionAggregate {
       return handleMoneyDepositedDuringCancel(correlationId)
           .andThen(handleMoneyWithdrawnDuringCancel(correlationId))
           .apply(List.of(TransactionFailed.builder()
-              .aggregateId(aggregateId.getValue())
+              .aggregateId(aggregateId.value())
               .correlationId(command.correlationId())
-              .fromAccountId(fromAccount.getValue())
-              .toAccountId(toAccount.getValue())
+              .fromAccountId(fromAccount.value())
+              .toAccountId(toAccount.value())
               .amount(this.amount)
               .build())
           );
@@ -150,9 +150,9 @@ public class TransactionAggregate {
   public TransactionState getState() {
     return TransactionState.builder()
         .amount(amount)
-        .fromAccountId(fromAccount.getValue())
-        .toAccountId(toAccount.getValue())
-        .aggregateId(aggregateId.getValue())
+        .fromAccountId(fromAccount.value())
+        .toAccountId(toAccount.value())
+        .aggregateId(aggregateId.value())
         .moneyDeposited(moneyDeposited)
         .moneyWithdrawn(moneyWithdrawn)
         .status(this.status)
@@ -163,11 +163,11 @@ public class TransactionAggregate {
     return events -> {
       if (moneyDeposited) {
         return Stream.concat(events.stream(), Stream.of(TransactionDepositRolledBack.builder()
-            .aggregateId(this.aggregateId.getValue())
+            .aggregateId(this.aggregateId.value())
             .amount(this.amount)
             .correlationId(correlationId)
-            .toAccountId(this.toAccount.getValue())
-            .fromAccountId(this.fromAccount.getValue())
+            .toAccountId(this.toAccount.value())
+            .fromAccountId(this.fromAccount.value())
             .build())).collect(Collectors.toList());
       } else {
         return events;
@@ -179,11 +179,11 @@ public class TransactionAggregate {
     return events -> {
       if (moneyWithdrawn) {
         return Stream.concat(events.stream(), Stream.of(TransactionWithdrawRolledBack.builder()
-            .aggregateId(this.aggregateId.getValue())
+            .aggregateId(this.aggregateId.value())
             .amount(this.amount)
             .correlationId(correlationId)
-            .toAccountId(this.toAccount.getValue())
-            .fromAccountId(this.fromAccount.getValue())
+            .toAccountId(this.toAccount.value())
+            .fromAccountId(this.fromAccount.value())
             .build())).collect(Collectors.toList());
       } else {
         return events;
@@ -197,10 +197,10 @@ public class TransactionAggregate {
         return Stream.concat(
             events.stream(),
             Stream.of(TransactionFinished.builder()
-                .aggregateId(aggregateId.getValue())
+                .aggregateId(aggregateId.value())
                 .correlationId(correlationId)
-                .fromAccountId(fromAccount.getValue())
-                .toAccountId(toAccount.getValue())
+                .fromAccountId(fromAccount.value())
+                .toAccountId(toAccount.value())
                 .build()))
             .collect(Collectors.toList());
       } else {
@@ -215,10 +215,10 @@ public class TransactionAggregate {
         return Stream.concat(
             events.stream(),
             Stream.of(TransactionFinished.builder()
-                .aggregateId(aggregateId.getValue())
+                .aggregateId(aggregateId.value())
                 .correlationId(correlationId)
-                .fromAccountId(fromAccount.getValue())
-                .toAccountId(toAccount.getValue())
+                .fromAccountId(fromAccount.value())
+                .toAccountId(toAccount.value())
                 .build()))
             .collect(Collectors.toList());
       } else {

@@ -9,7 +9,7 @@ public interface CommandResponse<S> {
 
   S state();
 
-  static ImmutableCommandResponse.Builder builder() {
+  static <S> ImmutableCommandResponse.Builder<S> builder() {
     return ImmutableCommandResponse.builder();
   }
 }

@@ -25,7 +25,7 @@ public class AccountAggregate {
   }
 
   public AccountEvent validateFinishOpenedTransaction(FinishOpenedTransaction cmd) {
-    if (this.openedTransactions.stream().anyMatch(id -> cmd.transactionId().equals(id.getValue()))) {
+    if (this.openedTransactions.stream().anyMatch(id -> cmd.transactionId().equals(id.value()))) {
       return OpenedTransactionFinished.builder()
           .aggregateId(cmd.aggregateId())
           .correlationId(cmd.correlationId())
@@ -51,7 +51,7 @@ public class AccountAggregate {
         .andThen(v ->
             MoneyDeposited.builder()
                 .correlationId(depositMoney.correlationId())
-                .aggregateId(aggregateId.getValue())
+                .aggregateId(aggregateId.value())
                 .amount(v)
                 .build())
         .apply(depositMoney.amount());
@@ -64,8 +64,7 @@ public class AccountAggregate {
   }
 
   public AccountEvent validateWithdrawTransferMoney(WithdrawTransferMoney command) {
-    if (this.openedTransactions.stream().anyMatch(id -> command.transactionId().equals(id.getValue()))
-        || this.finishedTransactions.stream().anyMatch(id -> command.transactionId().equals(id.getValue()))) {
+    if (isForOpenedOrFinishedTransaction(command.transactionId(), command.transactionId())) {
       return AccountNoChanged.builder()
           .aggregateId(command.aggregateId())
           .correlationId(command.correlationId())
@@ -78,8 +77,7 @@ public class AccountAggregate {
   }
 
   public AccountEvent validateDepositTransferMoney(DepositTransferMoney command) {
-    if (this.openedTransactions.stream().anyMatch(id -> command.transactionId().equals(id.getValue()))
-        || this.finishedTransactions.stream().anyMatch(id -> command.transactionId().equals(id.getValue()))) {
+    if (isForOpenedOrFinishedTransaction(command.transactionId(), command.transactionId())) {
       return AccountNoChanged.builder()
           .aggregateId(command.aggregateId())
           .correlationId(command.correlationId())
@@ -89,7 +87,7 @@ public class AccountAggregate {
         .andThen(v ->
             TransferMoneyDeposited.builder()
                 .correlationId(command.correlationId())
-                .aggregateId(aggregateId.getValue())
+                .aggregateId(aggregateId.value())
                 .amount(v)
                 .transactionId(command.transactionId())
                 .fromAccountId(command.fromAccount())
@@ -98,9 +96,14 @@ public class AccountAggregate {
         .apply(command.amount());
   }
 
+  private boolean isForOpenedOrFinishedTransaction(String command, String command1) {
+    return this.openedTransactions.stream().anyMatch(id -> command.equals(id.value()))
+        || this.finishedTransactions.stream().anyMatch(id -> command1.equals(id.value()));
+  }
+
   public AccountAggregate applyOpenedTransactionFinished(OpenedTransactionFinished event) {
     this.openedTransactions = this.openedTransactions.stream()
-        .filter(id -> !event.transactionId().equals(id.getValue()))
+        .filter(id -> !event.transactionId().equals(id.value()))
         .collect(Collectors.toSet());
     this.finishedTransactions.add(Id.of(event.transactionId()));
     return this;
@@ -135,9 +138,9 @@ public class AccountAggregate {
 
   public AccountState getState() {
     return AccountState.builder()
-        .aggregateId(this.aggregateId.getValue())
-        .addAllOpenedTransactions(this.openedTransactions.stream().map(Id::getValue).collect(Collectors.toSet()))
-        .addAllFinishedTransactions(this.finishedTransactions.stream().map(Id::getValue).collect(Collectors.toSet()))
+        .aggregateId(this.aggregateId.value())
+        .addAllOpenedTransactions(this.openedTransactions.stream().map(Id::value).collect(Collectors.toSet()))
+        .addAllFinishedTransactions(this.finishedTransactions.stream().map(Id::value).collect(Collectors.toSet()))
         .amount(this.amount.getAmount())
         .build();
   }

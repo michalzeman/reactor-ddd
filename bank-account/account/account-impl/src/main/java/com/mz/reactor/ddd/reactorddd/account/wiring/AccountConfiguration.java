@@ -30,7 +30,7 @@ public class AccountConfiguration {
 
   private final AccountEventHandler accountEventApplier = new AccountEventHandler();
   private final AccountCommandHandler accountCommandHandler = new AccountCommandHandler();
-  private final Function<Id, AccountAggregate> aggregateFactory = id -> new AccountAggregate(id.getValue());
+  private final Function<Id, AccountAggregate> aggregateFactory = id -> new AccountAggregate(id.value());
   private final Function<AccountAggregate, AccountState> stateFactory = AccountAggregate::getState;
 
   @Bean(ACCOUNT_QUERY_SERVICE)
@@ -62,7 +62,7 @@ public class AccountConfiguration {
 
   @Bean(ACCOUNT_VIEW_REPOSITORY)
   public ViewRepository<AccountState> getViewRepository() {
-    return new ViewRepositoryImpl<AccountState>();
+    return new ViewRepositoryImpl<>();
   }
 
 }

@@ -79,7 +79,7 @@ public class AccountHandler implements HttpHandler {
   public RouterFunction<ServerResponse> route() {
     var route = RouterFunctions
         .route(POST("").and(accept(MediaType.APPLICATION_JSON)), this::createAccount)
-        .andRoute(GET("/").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
+        .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
         .andRoute(GET("/{id}").and(accept(MediaType.APPLICATION_JSON)), this::getById)
         .andRoute(PUT("/moneys/withdraw").and(accept(MediaType.APPLICATION_JSON)), this::withdrawMoney)
         .andRoute(PUT("/moneys/deposit").and(accept(MediaType.APPLICATION_JSON)), this::depositMoney);

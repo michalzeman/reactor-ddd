@@ -28,7 +28,7 @@ public class TransactionConfiguration {
 
   private final TransactionEventHandler transactionEventHandler = new TransactionEventHandler();
   private final TransactionCommandHandler transactionCommandHandler = new TransactionCommandHandler();
-  private final Function<Id, TransactionAggregate> aggregateFactory = id -> new TransactionAggregate(id.getValue());
+  private final Function<Id, TransactionAggregate> aggregateFactory = id -> new TransactionAggregate(id.value());
   private final Function<TransactionAggregate, TransactionState> stateFactory = TransactionAggregate::getState;
 
   @Bean(TRANSACTION_AGGREGATE_REPOSITORY)

@@ -4,6 +4,7 @@ import com.mz.reactor.ddd.common.api.event.DomainEvent;
 import org.immutables.value.Value;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +28,20 @@ public interface CommandResult {
 
   static ImmutableCommandResult.Builder builder() {
     return ImmutableCommandResult.builder();
+  }
+
+  static CommandResult from(List<? extends DomainEvent> events, Command command) {
+    if (Objects.isNull(events) || events.isEmpty()) {
+      return notModified(command);
+    }
+
+    return Optional.ofNullable(command)
+        .map(aCommand -> CommandResult.builder()
+            .commandId(aCommand.commandId())
+            .events(events)
+            .statusCode(StatusCode.OK)
+            .build())
+        .orElseGet(() -> (ImmutableCommandResult) CommandResult.notModified());
   }
 
   static CommandResult fromError(RuntimeException error, List<? extends DomainEvent> events, Command command) {
@@ -57,5 +72,9 @@ public interface CommandResult {
             .orElseGet(() -> UUID.randomUUID().toString()))
         .statusCode(StatusCode.NOT_MODIFIED)
         .build();
+  }
+
+  static CommandResult notModified() {
+    return notModified(null);
   }
 }

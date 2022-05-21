@@ -59,7 +59,7 @@ public class TransactionHandler implements HttpHandler {
   public RouterFunction<ServerResponse> route() {
       var route = RouterFunctions
           .route(POST("").and(accept(MediaType.APPLICATION_JSON)), this::createTransaction)
-      .andRoute(GET("/").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
+      .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), this::getAll)
       .andRoute(GET("/{id}").and(accept(MediaType.APPLICATION_JSON)), this::getById);
 
       return RouterFunctions.route()

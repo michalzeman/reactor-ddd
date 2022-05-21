@@ -9,40 +9,18 @@ public class TransactionEventHandler implements EventHandler<TransactionAggregat
 
   @Override
   public <E extends DomainEvent> TransactionAggregate apply(TransactionAggregate aggregate, E event) {
-    if (event instanceof TransactionCreated) {
-      return applyTransactionCreated(aggregate, (TransactionCreated) event);
+    if (event instanceof TransactionCreated transactionCreated) {
+      return aggregate.applyTransactionCreated(transactionCreated);
     } else if (event instanceof TransactionFinished) {
-      return applyTransactionFinished(aggregate);
+      return aggregate.applyTransactionFinished();
     } else if (event instanceof TransactionFailed) {
-      return applyTransactionFailed(aggregate);
+      return aggregate.applyTransactionFailed();
     } else if (event instanceof TransactionMoneyWithdrawn) {
-      return applyTransactionMoneyWithdrawn(aggregate);
+      return aggregate.applyTransactionMoneyWithdrawn();
     } else if (event instanceof TransactionMoneyDeposited) {
-      return applyTransactionMoneyDeposited(aggregate);
+      return aggregate.applyTransactionMoneyDeposited();
     } else {
       return aggregate;
     }
   }
-
-  private TransactionAggregate applyTransactionMoneyDeposited(TransactionAggregate aggregate) {
-    return aggregate.applyTransactionMoneyDeposited();
-  }
-
-  private TransactionAggregate applyTransactionMoneyWithdrawn(TransactionAggregate aggregate) {
-    return aggregate.applyTransactionMoneyWithdrawn();
-  }
-
-  private TransactionAggregate applyTransactionFailed(TransactionAggregate aggregate) {
-    return aggregate.applyTransactionFailed();
-  }
-
-  private TransactionAggregate applyTransactionFinished(TransactionAggregate aggregate) {
-    return aggregate.applyTransactionFinished();
-  }
-
-  private TransactionAggregate applyTransactionCreated(TransactionAggregate aggregate, TransactionCreated event) {
-    return aggregate.applyTransactionCreated(event);
-  }
-
-
 }

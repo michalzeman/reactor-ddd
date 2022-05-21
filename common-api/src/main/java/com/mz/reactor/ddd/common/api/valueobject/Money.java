@@ -5,11 +5,10 @@ import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
-public class Money {
-  private final BigDecimal amount;
+public record Money(BigDecimal amount) {
 
-  public Money(BigDecimal amount) {
-    this.amount = validateValue.apply(amount);
+  public Money {
+    validateValue.apply(amount);
   }
 
   public Money depositMoney(BigDecimal amount) {

@@ -2,10 +2,7 @@ package com.mz.reactor.ddd.reactorddd.persistance.view.impl.impl;
 
 import com.mz.reactor.ddd.common.api.view.DomainView;
 import com.mz.reactor.ddd.reactorddd.persistance.view.impl.ViewRepository;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.UnicastProcessor;
+import reactor.core.publisher.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +15,10 @@ public class ViewRepositoryImpl<S extends DomainView> implements ViewRepository<
 
   private final AtomicReference<Map<String, S>> storage = new AtomicReference<>(new HashMap<>());
 
-  UnicastProcessor<S> storageProcessor = UnicastProcessor.create();
-
-  FluxSink<S> sink = storageProcessor.sink();
+  Sinks.Many<S> storageSink = Sinks.many().unicast().onBackpressureBuffer();
 
   public ViewRepositoryImpl() {
-    storageProcessor
+    storageSink.asFlux()
         .parallel()
         .subscribe(view -> storage.updateAndGet(sm -> {
           sm.put(view.id(), view);
@@ -33,7 +28,7 @@ public class ViewRepositoryImpl<S extends DomainView> implements ViewRepository<
 
   @Override
   public void addView(S view) {
-    sink.next(view);
+    storageSink.tryEmitNext(view);
   }
 
   @Override

@@ -1,1 +1,490 @@
-{"_type":"export","__export_format":4,"__export_date":"2020-12-15T19:45:50.598Z","__export_source":"insomnia.desktop.app:v2020.4.0","resources":[{"_id":"req_01bf0d3106424d0ca9b5c3886d573d5c","parentId":"fld_d8d86015024941b4bfbbc159c9dcaecf","modified":1607975402239,"created":1606067719725,"url":"http://localhost:8080/transactions","name":"1. Create Transaction","description":"","method":"POST","body":{"mimeType":"application/json","text":"{\n\t\"payload\": {\n\t\t\"fromAccountId\": \"AccountA\",\n\t\t\"toAccountId\": \"AccountB\",\n\t\t\"amount\": \"20\"\n\t}\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_e177881f7fec4a83906516ab3d1f0b52"}],"authentication":{},"metaSortKey":-1606067719725,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"fld_d8d86015024941b4bfbbc159c9dcaecf","parentId":"wrk_136f63698978409280d239ed71203d46","modified":1606067690806,"created":1606067690806,"name":"Transaction","description":"","environment":{},"environmentPropertyOrder":null,"metaSortKey":-1606067690806,"_type":"request_group"},{"_id":"wrk_136f63698978409280d239ed71203d46","parentId":null,"modified":1606054370747,"created":1606054370747,"name":"reactor-ddd-bank-account","description":"","scope":null,"_type":"workspace"},{"_id":"req_446595cc06d244709059443557cc5fa2","parentId":"fld_d8d86015024941b4bfbbc159c9dcaecf","modified":1607975395746,"created":1606067906270,"url":"http://localhost:8080/transactions","name":"2. Create Transaction To Account doesn't exists","description":"","method":"POST","body":{"mimeType":"application/json","text":"{\n\t\"payload\": {\n\t\t\"fromAccountId\": \"AccountA\",\n\t\t\"toAccountId\": \"AccountD\",\n\t\t\"amount\": \"20\"\n\t}\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_e177881f7fec4a83906516ab3d1f0b52"}],"authentication":{},"metaSortKey":-1606066072192.125,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_63e33a6df8514bac9aeaa755973062df","parentId":"fld_d8d86015024941b4bfbbc159c9dcaecf","modified":1607975389511,"created":1606068016791,"url":"http://localhost:8080/transactions","name":"3. Create Transaction too much amount","description":"","method":"POST","body":{"mimeType":"application/json","text":"{\n\t\"payload\": {\n\t\t\"fromAccountId\": \"AccountA\",\n\t\t\"toAccountId\": \"AccountB\",\n\t\t\"amount\": \"2000\"\n\t}\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_e177881f7fec4a83906516ab3d1f0b52"}],"authentication":{},"metaSortKey":-1606064424659.25,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_4c2d0594d58047e6b62692af714a011e","parentId":"fld_d8d86015024941b4bfbbc159c9dcaecf","modified":1606067973520,"created":1606067963424,"url":"http://localhost:8080/transactions","name":"Get all","description":"","method":"GET","body":{"mimeType":"application/json","text":""},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_e177881f7fec4a83906516ab3d1f0b52"}],"authentication":{},"metaSortKey":-1606057834527.75,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_678287f8a90c45569a87cafb71e4bbda","parentId":"fld_44891b430b134f83912951b6a3d13df1","modified":1606054681401,"created":1606054539462,"url":"http://localhost:8080/accounts","name":"Create Account A","description":"","method":"POST","body":{"mimeType":"application/json","text":"{\n\t\"payload\": {\n\t\t\"balance\" : 100,\n\t\t\"aggregateId\": \"AccountA\"\n\t}\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_5b61308de40b4ff982b50772035c8f48"}],"authentication":{},"metaSortKey":-1606054539462,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"fld_44891b430b134f83912951b6a3d13df1","parentId":"wrk_136f63698978409280d239ed71203d46","modified":1606054516315,"created":1606054449299,"name":"Accounts","description":"","environment":{},"environmentPropertyOrder":null,"metaSortKey":-1606054449299,"_type":"request_group"},{"_id":"req_fb67fa5d816d4d64a56834418e1dc036","parentId":"fld_44891b430b134f83912951b6a3d13df1","modified":1606054721175,"created":1606054708651,"url":"http://localhost:8080/accounts","name":"Create Account B","description":"","method":"POST","body":{"mimeType":"application/json","text":"{\n\t\"payload\": {\n\t\t\"balance\" : 120,\n\t\t\"aggregateId\": \"AccountB\"\n\t}\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_5b61308de40b4ff982b50772035c8f48"}],"authentication":{},"metaSortKey":-1603334596964.5,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_e3152e84885e496eb6dba19cfaeac6d6","parentId":"fld_44891b430b134f83912951b6a3d13df1","modified":1606055551276,"created":1606055410131,"url":"http://localhost:8080/accounts/moneys/withdraw","name":"Withdraw Account A","description":"","method":"PUT","body":{"mimeType":"application/json","text":"{\n\t\"payload\": {\n\t\t\"amount\" : 20,\n\t\t\"aggregateId\": \"AccountA\"\n\t}\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_5b61308de40b4ff982b50772035c8f48"}],"authentication":{},"metaSortKey":-1602654611340.125,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_173e79193d434ee291f8663b55816603","parentId":"fld_44891b430b134f83912951b6a3d13df1","modified":1606055663195,"created":1606055588615,"url":"http://localhost:8080/accounts/moneys/deposit","name":"Deposit Account A","description":"","method":"PUT","body":{"mimeType":"application/json","text":"{\n\t\"payload\": {\n\t\t\"amount\" : 20,\n\t\t\"aggregateId\": \"AccountA\"\n\t}\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_5b61308de40b4ff982b50772035c8f48"}],"authentication":{},"metaSortKey":-1602484614934.0312,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_680e9a7bb0db43bbb475749b5646824f","parentId":"fld_44891b430b134f83912951b6a3d13df1","modified":1606055645135,"created":1606055614821,"url":"http://localhost:8080/accounts/moneys/deposit","name":"Deposit Account B","description":"","method":"PUT","body":{"mimeType":"application/json","text":"{\n\t\"payload\": {\n\t\t\"amount\" : 20,\n\t\t\"aggregateId\": \"AccountB\"\n\t}\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_5b61308de40b4ff982b50772035c8f48"}],"authentication":{},"metaSortKey":-1602399616730.9844,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_9ac80f285d1843129950a8b8c853f2a6","parentId":"fld_44891b430b134f83912951b6a3d13df1","modified":1606055567522,"created":1606055563924,"url":"http://localhost:8080/accounts/moneys/withdraw","name":"Withdraw Account B","description":"","method":"PUT","body":{"mimeType":"application/json","text":"{\n\t\"payload\": {\n\t\t\"amount\" : 20,\n\t\t\"aggregateId\": \"AccountB\"\n\t}\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_5b61308de40b4ff982b50772035c8f48"}],"authentication":{},"metaSortKey":-1602314618527.9375,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_0862e27a175949e0a95aecdb922c97e4","parentId":"fld_44891b430b134f83912951b6a3d13df1","modified":1606054751714,"created":1606054740060,"url":"http://localhost:8080/accounts","name":"GetAll","description":"","method":"GET","body":{"mimeType":"application/json","text":""},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_5b61308de40b4ff982b50772035c8f48"}],"authentication":{},"metaSortKey":-1601974625715.75,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_df914654c5b641e5b78f20a9a6c0d5e8","parentId":"fld_44891b430b134f83912951b6a3d13df1","modified":1606055303051,"created":1606055295938,"url":"http://localhost:8080/accounts/AccountA","name":"Get Account A","description":"","method":"GET","body":{"mimeType":"application/json","text":""},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_5b61308de40b4ff982b50772035c8f48"}],"authentication":{},"metaSortKey":-1601294640091.375,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_963f9f1ea5c54f1aabe64567413ffcb2","parentId":"fld_44891b430b134f83912951b6a3d13df1","modified":1606055340309,"created":1606055315025,"url":"http://localhost:8080/accounts/AccountB","name":"Get Account B","description":"","method":"GET","body":{"mimeType":"application/json","text":""},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json","id":"pair_5b61308de40b4ff982b50772035c8f48"}],"authentication":{},"metaSortKey":-1600954647279.1875,"isPrivate":false,"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"env_c4b9cac8a3c19cfb8a53393a9c9d3ae6d556f2ea","parentId":"wrk_136f63698978409280d239ed71203d46","modified":1606054371045,"created":1606054371045,"name":"Base Environment","data":{},"dataPropertyOrder":null,"color":null,"isPrivate":false,"metaSortKey":1606054371045,"_type":"environment"},{"_id":"jar_c4b9cac8a3c19cfb8a53393a9c9d3ae6d556f2ea","parentId":"wrk_136f63698978409280d239ed71203d46","modified":1606054371049,"created":1606054371049,"name":"Default Jar","cookies":[],"_type":"cookie_jar"},{"_id":"spc_2656f0ceaae94f59a97d7b03bd9c1b06","parentId":"wrk_136f63698978409280d239ed71203d46","modified":1606054370759,"created":1606054370759,"fileName":"reactor-ddd-bank-account","contents":"","contentType":"yaml","_type":"api_spec"}]}
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2020-12-15T19:45:50.598Z",
+  "__export_source": "insomnia.desktop.app:v2020.4.0",
+  "resources": [
+    {
+      "_id": "req_01bf0d3106424d0ca9b5c3886d573d5c",
+      "parentId": "fld_d8d86015024941b4bfbbc159c9dcaecf",
+      "modified": 1607975402239,
+      "created": 1606067719725,
+      "url": "http://localhost:8080/transactions",
+      "name": "1. Create Transaction",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"payload\": {\n\t\t\"fromAccountId\": \"AccountA\",\n\t\t\"toAccountId\": \"AccountB\",\n\t\t\"amount\": \"20\"\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_e177881f7fec4a83906516ab3d1f0b52"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1606067719725,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_d8d86015024941b4bfbbc159c9dcaecf",
+      "parentId": "wrk_136f63698978409280d239ed71203d46",
+      "modified": 1606067690806,
+      "created": 1606067690806,
+      "name": "Transaction",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1606067690806,
+      "_type": "request_group"
+    },
+    {
+      "_id": "wrk_136f63698978409280d239ed71203d46",
+      "parentId": null,
+      "modified": 1606054370747,
+      "created": 1606054370747,
+      "name": "reactor-ddd-bank-account",
+      "description": "",
+      "scope": null,
+      "_type": "workspace"
+    },
+    {
+      "_id": "req_446595cc06d244709059443557cc5fa2",
+      "parentId": "fld_d8d86015024941b4bfbbc159c9dcaecf",
+      "modified": 1607975395746,
+      "created": 1606067906270,
+      "url": "http://localhost:8080/transactions",
+      "name": "2. Create Transaction To Account doesn't exists",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"payload\": {\n\t\t\"fromAccountId\": \"AccountA\",\n\t\t\"toAccountId\": \"AccountD\",\n\t\t\"amount\": \"20\"\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_e177881f7fec4a83906516ab3d1f0b52"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1606066072192.125,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_63e33a6df8514bac9aeaa755973062df",
+      "parentId": "fld_d8d86015024941b4bfbbc159c9dcaecf",
+      "modified": 1607975389511,
+      "created": 1606068016791,
+      "url": "http://localhost:8080/transactions",
+      "name": "3. Create Transaction too much amount",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"payload\": {\n\t\t\"fromAccountId\": \"AccountA\",\n\t\t\"toAccountId\": \"AccountB\",\n\t\t\"amount\": \"2000\"\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_e177881f7fec4a83906516ab3d1f0b52"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1606064424659.25,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_4c2d0594d58047e6b62692af714a011e",
+      "parentId": "fld_d8d86015024941b4bfbbc159c9dcaecf",
+      "modified": 1606067973520,
+      "created": 1606067963424,
+      "url": "http://localhost:8080/transactions",
+      "name": "Get all",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": ""
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_e177881f7fec4a83906516ab3d1f0b52"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1606057834527.75,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_678287f8a90c45569a87cafb71e4bbda",
+      "parentId": "fld_44891b430b134f83912951b6a3d13df1",
+      "modified": 1606054681401,
+      "created": 1606054539462,
+      "url": "http://localhost:8080/accounts",
+      "name": "Create Account A",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"payload\": {\n\t\t\"balance\" : 100,\n\t\t\"aggregateId\": \"AccountA\"\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5b61308de40b4ff982b50772035c8f48"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1606054539462,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_44891b430b134f83912951b6a3d13df1",
+      "parentId": "wrk_136f63698978409280d239ed71203d46",
+      "modified": 1606054516315,
+      "created": 1606054449299,
+      "name": "Accounts",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1606054449299,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_fb67fa5d816d4d64a56834418e1dc036",
+      "parentId": "fld_44891b430b134f83912951b6a3d13df1",
+      "modified": 1606054721175,
+      "created": 1606054708651,
+      "url": "http://localhost:8080/accounts",
+      "name": "Create Account B",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"payload\": {\n\t\t\"balance\" : 120,\n\t\t\"aggregateId\": \"AccountB\"\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5b61308de40b4ff982b50772035c8f48"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1603334596964.5,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_e3152e84885e496eb6dba19cfaeac6d6",
+      "parentId": "fld_44891b430b134f83912951b6a3d13df1",
+      "modified": 1606055551276,
+      "created": 1606055410131,
+      "url": "http://localhost:8080/accounts/moneys/withdraw",
+      "name": "Withdraw Account A",
+      "description": "",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"payload\": {\n\t\t\"amount\" : 20,\n\t\t\"aggregateId\": \"AccountA\"\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5b61308de40b4ff982b50772035c8f48"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1602654611340.125,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_173e79193d434ee291f8663b55816603",
+      "parentId": "fld_44891b430b134f83912951b6a3d13df1",
+      "modified": 1606055663195,
+      "created": 1606055588615,
+      "url": "http://localhost:8080/accounts/moneys/deposit",
+      "name": "Deposit Account A",
+      "description": "",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"payload\": {\n\t\t\"amount\" : 20,\n\t\t\"aggregateId\": \"AccountA\"\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5b61308de40b4ff982b50772035c8f48"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1602484614934.0312,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_680e9a7bb0db43bbb475749b5646824f",
+      "parentId": "fld_44891b430b134f83912951b6a3d13df1",
+      "modified": 1606055645135,
+      "created": 1606055614821,
+      "url": "http://localhost:8080/accounts/moneys/deposit",
+      "name": "Deposit Account B",
+      "description": "",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"payload\": {\n\t\t\"amount\" : 20,\n\t\t\"aggregateId\": \"AccountB\"\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5b61308de40b4ff982b50772035c8f48"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1602399616730.9844,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_9ac80f285d1843129950a8b8c853f2a6",
+      "parentId": "fld_44891b430b134f83912951b6a3d13df1",
+      "modified": 1606055567522,
+      "created": 1606055563924,
+      "url": "http://localhost:8080/accounts/moneys/withdraw",
+      "name": "Withdraw Account B",
+      "description": "",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"payload\": {\n\t\t\"amount\" : 20,\n\t\t\"aggregateId\": \"AccountB\"\n\t}\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5b61308de40b4ff982b50772035c8f48"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1602314618527.9375,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_0862e27a175949e0a95aecdb922c97e4",
+      "parentId": "fld_44891b430b134f83912951b6a3d13df1",
+      "modified": 1606054751714,
+      "created": 1606054740060,
+      "url": "http://localhost:8080/accounts",
+      "name": "GetAll",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": ""
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5b61308de40b4ff982b50772035c8f48"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1601974625715.75,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_df914654c5b641e5b78f20a9a6c0d5e8",
+      "parentId": "fld_44891b430b134f83912951b6a3d13df1",
+      "modified": 1606055303051,
+      "created": 1606055295938,
+      "url": "http://localhost:8080/accounts/AccountA",
+      "name": "Get Account A",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": ""
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5b61308de40b4ff982b50772035c8f48"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1601294640091.375,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_963f9f1ea5c54f1aabe64567413ffcb2",
+      "parentId": "fld_44891b430b134f83912951b6a3d13df1",
+      "modified": 1606055340309,
+      "created": 1606055315025,
+      "url": "http://localhost:8080/accounts/AccountB",
+      "name": "Get Account B",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": ""
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_5b61308de40b4ff982b50772035c8f48"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1600954647279.1875,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "env_c4b9cac8a3c19cfb8a53393a9c9d3ae6d556f2ea",
+      "parentId": "wrk_136f63698978409280d239ed71203d46",
+      "modified": 1606054371045,
+      "created": 1606054371045,
+      "name": "Base Environment",
+      "data": {},
+      "dataPropertyOrder": null,
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1606054371045,
+      "_type": "environment"
+    },
+    {
+      "_id": "jar_c4b9cac8a3c19cfb8a53393a9c9d3ae6d556f2ea",
+      "parentId": "wrk_136f63698978409280d239ed71203d46",
+      "modified": 1606054371049,
+      "created": 1606054371049,
+      "name": "Default Jar",
+      "cookies": [],
+      "_type": "cookie_jar"
+    },
+    {
+      "_id": "spc_2656f0ceaae94f59a97d7b03bd9c1b06",
+      "parentId": "wrk_136f63698978409280d239ed71203d46",
+      "modified": 1606054370759,
+      "created": 1606054370759,
+      "fileName": "reactor-ddd-bank-account",
+      "contents": "",
+      "contentType": "yaml",
+      "_type": "api_spec"
+    }
+  ]
+}
